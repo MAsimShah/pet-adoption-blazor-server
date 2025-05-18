@@ -46,4 +46,4 @@ This project connects to a backend ASP.NET Core API:
 
 1. Clone the repo:
    ```bash
-   git clone [https://github.com/MAsimShah/pet-adoption-blazor-server.git](https://github.com/MAsimShah/pet-adoption-blazor-server.git)
+   git clone https://github.com/MAsimShah/pet-adoption-blazor-server.git
