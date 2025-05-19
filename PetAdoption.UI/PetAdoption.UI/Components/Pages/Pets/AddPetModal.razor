@@ -1,0 +1,51 @@
+﻿@inject HttpClient Http
+
+@if (IsVisible)
+{
+    <div class="modal-backdrop" @onclick="CloseModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <h3>Upload Image</h3>
+            <EditForm OnValidSubmit="HandleSubmit">
+                <InputFile OnChange="HandleFileSelected" />
+                <br />
+                <button type="submit">Upload</button>
+            </EditForm>
+            <button @onclick="CloseModal">Cancel</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    private IBrowserFile? selectedFile;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (selectedFile is not null)
+        {
+            using var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 10_000_000)); // 10MB limit
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+            content.Add(fileContent, "file", selectedFile.Name);
+
+            var response = await Http.PostAsync("https://localhost:7150/api/YourUploadEndpoint", content);
+            if (response.IsSuccessStatusCode)
+            {
+                // Optional: handle success (show message, refresh, etc.)
+                await CloseModal();
+            }
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        await IsVisibleChanged.InvokeAsync(false);
+    }
+}
