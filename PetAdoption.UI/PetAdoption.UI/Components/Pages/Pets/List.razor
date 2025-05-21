@@ -1,30 +1,140 @@
 ﻿@page "/pets"
 <h1>Pets</h1>
 
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-   Add New Pet
-</button>
+<Button Color="ButtonColor.Primary" @onclick="OnShowModal"> Add New Pet </Button>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
+<Modal @ref="modal" Title="Add New Pet" IsScrollable="true">
+    <BodyTemplate>
+        <EditForm Model="@petViewModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
 
+            <div class="form-group">
+                <div class="row">
+                    <!-- Name field -->
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Name:</label>
+                        <InputText id="name" class="form-control" @bind-Value="petViewModel.Name" />
+                        <ValidationMessage For="@(() => petViewModel.Name)" />
+                    </div>
+
+                    <!-- Breed field -->
+                    <div class="col-md-6">
+                        <label for="breed" class="form-label">Breed:</label>
+                        <InputText id="breed" class="form-control" @bind-Value="petViewModel.Breed" />
+                        <ValidationMessage For="@(() => petViewModel.Breed)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <InputNumber id="age" class="form-control" @bind-Value="petViewModel.Age" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <InputTextArea id="description" class="form-control" @bind-Value="petViewModel.Description" />
+            </div>
+
+            <div class="form-group">
+                <CheckboxInput id="chkMicrochipped" Label="Microchipped" @bind-Value="petViewModel.Microchipped" />
+            </div>
+
+            <div class="form-group">
+                <label for="goodWithKids">Good with Kids:</label>
+                <InputCheckbox id="goodWithKids" class="form-control" @bind-Value="petViewModel.GoodWithKids" />
+            </div>
+
+            <div class="form-group">
+                <label for="goodWithOtherPets">Good with Other Pets:</label>
+                <InputCheckbox id="goodWithOtherPets" class="form-control" @bind-Value="petViewModel.GoodWithOtherPets" />
+            </div>
+
+            <div class="form-group">
+                <label for="adoptionFee">Adoption Fee:</label>
+                <InputNumber id="adoptionFee" class="form-control" @bind-Value="petViewModel.AdoptionFee" />
+            </div>
+
+            <div class="form-group">
+                <label for="adoptableSince">Adoptable Since:</label>
+                <InputDate id="adoptableSince" class="form-control" @bind-Value="petViewModel.AdoptableSince" />
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <InputText id="location" class="form-control" @bind-Value="petViewModel.Location" />
+            </div>
+
+            <div class="form-group">
+                <label for="photo">Photo (Base64):</label>
+                <InputText id="photo" class="form-control" @bind-Value="petViewModel.Photo" />
+            </div>
+
+            <div class="form-group">
+                <label for="contactInformation">Contact Information:</label>
+                <InputNumber id="contactInformation" class="form-control" @bind-Value="petViewModel.ContactInformation" />
+            </div>
+
+            <!-- Species dropdown -->
+            <div class="form-group">
+                <label for="species">Species:</label>
+                <InputSelect id="species" class="form-control" @bind-Value="petViewModel.Species">
+                    @foreach (var species in Enum.GetValues<Species>())
+                    {
+                        <option value="@species">@species</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <!-- Gender dropdown -->
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <InputSelect id="gender" class="form-control" @bind-Value="petViewModel.Gender">
+                    <option value="@AnimalGender.Male">Male</option>
+                    <option value="@AnimalGender.Femlae">Female</option>
+                </InputSelect>
+            </div>
+
+            <!-- Color dropdown -->
+            <div class="form-group">
+                <label for="color">Color:</label>
+                <InputSelect id="color" class="form-control" @bind-Value="petViewModel.Color">
+                    @foreach (var color in Enum.GetValues<AnimalColor>())
+                    {
+                        <option value="@color">@color</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <!-- Health Status dropdown -->
+            <div class="form-group">
+                <label for="healthStatus">Health Status:</label>
+                <InputSelect id="healthStatus" class="form-control" @bind-Value="petViewModel.HealthStatus">
+                    @foreach (var healthStatus in Enum.GetValues<HealthStatus>())
+                    {
+                        <option value="@healthStatus">@healthStatus</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <Button Color="ButtonColor.Secondary" @onclick="OnHideModal">Close</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save changes</Button>
+        </EditForm>
+    </BodyTemplate>
+</Modal>
+
+<Grid TItem="PetViewModel" Data="@pets" Class="table table-hover table-bordered table-striped" Responsive="true"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true">
+    <GridColumns>
+        <GridColumn TItem="PetViewModel" HeaderText="Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="PetViewModel" HeaderText="Age" PropertyName="Age" SortKeySelector="item => item.Age">
+            @context.Age
+        </GridColumn>
+    </GridColumns>
+</Grid>
