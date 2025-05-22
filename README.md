@@ -1,21 +1,6 @@
-# 🐾 Pet Adoption Portal – Blazor Server (.Net 9)
+# 🐾 Pet Adoption Portal – Blazor Server (.NET 9)
 
 Welcome to the **Pet Adoption Portal**, a full-stack web application for managing pet adoptions, built with **Blazor Server** and **ASP.NET Core Web API**. This modern and responsive platform bridges the gap between animal shelters and loving adopters, offering a seamless pet adoption experience.
-
----
-
-## 📌 Table of Contents
-
-- [About the Project](#about-the-project)
-- [Technologies Used](#technologies-used)
-- [Architecture](#architecture)
-- [Setup Instructions](#setup-instructions)
-- [Key Features](#key-features)
-- [Future Enhancements](#future-enhancements)
-- [Screenshots](#screenshots)
-- [License](#license)
-
----
 
 ## 🐶 About the Project
 
