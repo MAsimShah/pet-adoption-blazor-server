@@ -22,37 +22,24 @@ It’s ideal for developers exploring:
 
 ---
 
-## 💻 Technologies Used
+## 💻 Technology Stack
 
 ### Frontend – Blazor Server
-- **.NET 8 / .NET 7**
+- **.NET 9**
 - **Razor Components**
 - **SignalR** (real-time notifications)
 - **Dependency Injection**
 - **JWT Authentication** or **ASP.NET Identity** (planned)
 
-### Backend – ASP.NET Core Web API
-- **.NET Core Web API**
-- **Entity Framework Core**
-- **SQL Server / Azure SQL**
-- **Repository + Unit of Work pattern**
-
----
-
-## 🧠 Architecture
-
-The system follows a **Clean Architecture** pattern:
-- **Presentation Layer**: Blazor UI
-- **API Layer**: ASP.NET Core Web API
-- **Data Access Layer**: EF Core, SQL Server
-- **Business Logic**: Services injected into both layers
-
-Data is passed via DTOs and models, with separation between client and server concerns.
-
 ---
 
 ## 🚀 Setup Instructions
 
-1. Clone the repository:
+1. Clone Blazor UI repository:
    ```bash
-   git clone https://github.com/yourusername/pet-adoption-portal.git
+   git clone https://github.com/MAsimShah/pet-adoption-blazor-server.git
+
+   
+2. Clone Web API (.NET 9) repository:
+   ```bash
+   git clone https://github.com/MAsimShah/pet-adoption-api.git
