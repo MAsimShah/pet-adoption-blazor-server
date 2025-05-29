@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace PetAdoption.UI.Components.Models
@@ -41,6 +42,7 @@ namespace PetAdoption.UI.Components.Models
         public DateTime? AdoptableSince { get; set; }
         public string? Location { get; set; }
         public string? Photo { get; set; } // Accepts image as Base64
+        public List<IFormFile> UploadedImages { get; set; } = new();
     }
 
     public enum AnimalGender
