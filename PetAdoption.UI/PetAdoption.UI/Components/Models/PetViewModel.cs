@@ -26,13 +26,13 @@ namespace PetAdoption.UI.Components.Models
         public Species Species { get; set; } = Species.Other;
 
         [Required]
-        public AnimalGender Gender { get; set; }
+        public AnimalGender Gender { get; set; } = AnimalGender.Male;
 
         [Required]
-        public AnimalColor Color { get; set; }
+        public AnimalColor Color { get; set; } = AnimalColor.Black;
 
         [Required]
-        public HealthStatus HealthStatus { get; set; }
+        public HealthStatus HealthStatus { get; set; } = HealthStatus.GoodHealth;
 
         public string Description { get; set; } = string.Empty;
         public bool Microchipped { get; set; } = false;
@@ -41,14 +41,14 @@ namespace PetAdoption.UI.Components.Models
         public decimal? AdoptionFee { get; set; } = 0;
         public DateTime? AdoptableSince { get; set; }
         public string? Location { get; set; }
-        public string? Photo { get; set; } // Accepts image as Base64
-        public List<IFormFile> UploadedImages { get; set; } = new();
+
+        public List<PetPhotosViewModel> PetPhotos { get; set; }
     }
 
     public enum AnimalGender
     {
         Male = 1,
-        Femlae = 2
+        Female = 2
     }
 
     public enum Species
