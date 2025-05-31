@@ -1,143 +1,436 @@
 ﻿@page "/pets"
 @inject HttpClient Http
+@inject ToastService ToastService
+@inject PreloadService PreloadService
+@inject IConfiguration Configuration
 
-<h1>Pets</h1>
-
-<Button Color="ButtonColor.Primary" @onclick="OnShowModal"> Add New Pet </Button>
-
-<!-- Modal -->
-<Modal @ref="modal" Title="Add New Pet" IsScrollable="true">
+<!-- Enhanced Modal -->
+<Modal @ref="modal" Title="Add New Pet" IsScrollable="true" Size="ModalSize.ExtraLarge" IsBackdropDismissible="false">
     <BodyTemplate>
-        <EditForm Model="@petViewModel" OnValidSubmit="HandleValidSubmit">
+        <EditForm Model="@petViewModel" OnValidSubmit="SavePet" id="petForm">
             <DataAnnotationsValidator />
 
-            <div class="form-group">
-                <div class="row">
-                    <!-- Name field -->
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Name:</label>
-                        <InputText id="name" class="form-control" @bind-Value="petViewModel.Name" />
-                        <ValidationMessage For="@(() => petViewModel.Name)" />
+            <div class="container-fluid">
+                <div class="row g-4">
+                    <!-- Left Column - Form Fields -->
+                    <div class="col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><Icon Name="IconName.InfoCircle" class="me-2" />Pet Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Basic Information Section -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary border-bottom pb-2 mb-3">Basic Information</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="name" class="form-label fw-bold">
+                                                <Icon Name="IconName.Heart" class="me-1 text-danger" />Name <span class="text-danger">*</span>
+                                            </label>
+                                            <InputText id="name" class="form-control form-control-lg" @bind-Value="petViewModel.Name" placeholder="Enter pet's name" />
+                                            <ValidationMessage For="@(() => petViewModel.Name)" class="text-danger small" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="breed" class="form-label fw-bold">
+                                                <Icon Name="IconName.Award" class="me-1 text-warning" />Breed <span class="text-danger">*</span>
+                                            </label>
+                                            <InputText id="breed" class="form-control form-control-lg" @bind-Value="petViewModel.Breed" placeholder="Enter breed" />
+                                            <ValidationMessage For="@(() => petViewModel.Breed)" class="text-danger small" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Physical Characteristics -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary border-bottom pb-2 mb-3">Physical Characteristics</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="age" class="form-label fw-bold">
+                                                <Icon Name="IconName.Clock" class="me-1 text-info" />Age <span class="text-danger">*</span>
+                                            </label>
+                                            <InputNumber id="age" class="form-control" @bind-Value="petViewModel.Age" placeholder="Years" />
+                                            <ValidationMessage For="@(() => petViewModel.Age)" class="text-danger small" />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="species" class="form-label fw-bold">Species <span class="text-danger">*</span></label>
+                                            <InputSelect id="species" class="form-select" @bind-Value="petViewModel.Species">
+                                                @foreach (var species in Enum.GetValues<Species>())
+                                                {
+                                                    <option value="@species">@species</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => petViewModel.Species)" class="text-danger small" />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="gender" class="form-label fw-bold">Gender <span class="text-danger">*</span></label>
+                                            <InputSelect id="gender" class="form-select" @bind-Value="petViewModel.Gender">
+                                                @foreach (AnimalGender gender in Enum.GetValues(typeof(AnimalGender)))
+                                                {
+                                                    <option value="@gender">@gender</option>
+                                                }
+                                            </InputSelect>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="color" class="form-label fw-bold">Color <span class="text-danger">*</span></label>
+                                            <InputSelect id="color" class="form-select" @bind-Value="petViewModel.Color">
+                                                @foreach (var color in Enum.GetValues<AnimalColor>())
+                                                {
+                                                    <option value="@color">@color</option>
+                                                }
+                                            </InputSelect>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-4">
+                                    <label for="description" class="form-label fw-bold">
+                                        <Icon Name="IconName.FileText" class="me-1 text-success" />Description
+                                    </label>
+                                    <TextAreaInput id="description" class="form-control" rows="4" @bind-Value="petViewModel.Description"
+                                                   placeholder="Tell us about this pet's personality, habits, and special needs..." />
+                                </div>
+
+                                <!-- Behavioral Traits -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary border-bottom pb-2 mb-3">Behavioral Traits</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch form-check-lg">
+                                                <CheckboxInput id="chkMicrochipped" Label="Microchipped" @bind-Value="petViewModel.Microchipped" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch">
+                                                <CheckboxInput id="goodWithKids" Label="Good with Kids" class="form-check-input" @bind-Value="petViewModel.GoodWithKids" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch">
+                                                <CheckboxInput id="goodWithOtherPets" Label="Good with Other Pet" class="form-check-input" @bind-Value="petViewModel.GoodWithOtherPets" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Information -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary border-bottom pb-2 mb-3">Additional Information</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="healthStatus" class="form-label fw-bold">
+                                                <Icon Name="IconName.Activity" class="me-1 text-success" />Health Status <span class="text-danger">*</span>
+                                            </label>
+                                            <InputSelect id="healthStatus" class="form-select" @bind-Value="petViewModel.HealthStatus">
+                                                <option value="">Select Status</option>
+                                                @foreach (var healthStatus in Enum.GetValues<HealthStatus>())
+                                                {
+                                                    <option value="@healthStatus">@healthStatus</option>
+                                                }
+                                            </InputSelect>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="adoptionFee" class="form-label fw-bold">
+                                                <Icon Name="IconName.CurrencyDollar" class="me-1 text-warning" />Adoption Fee
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <InputNumber id="adoptionFee" class="form-control" @bind-Value="petViewModel.AdoptionFee" placeholder="0.00" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="adoptableSince" class="form-label fw-bold">
+                                                <Icon Name="IconName.Calendar" class="me-1 text-info" />Adoptable Since
+                                            </label>
+                                            <DateInput id="adoptableSince" class="form-control" @bind-Value="petViewModel.AdoptableSince" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary border-bottom pb-2 mb-3">Contact & Location</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="location" class="form-label fw-bold">
+                                                <Icon Name="IconName.PinMap" class="me-1 text-danger" />Location
+                                            </label>
+                                            <InputText id="location" class="form-control" @bind-Value="petViewModel.Location" placeholder="City, State" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="contactInformation" class="form-label fw-bold">
+                                                <Icon Name="IconName.Phone" class="me-1 text-success" />Contact Number
+                                            </label>
+                                            <InputNumber id="contactInformation" class="form-control" @bind-Value="petViewModel.ContactInformation" placeholder="Phone number" />
+                                            <ValidationMessage For="@(() => petViewModel.ContactInformation)" class="text-danger small" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Breed field -->
-                    <div class="col-md-6">
-                        <label for="breed" class="form-label">Breed:</label>
-                        <InputText id="breed" class="form-control" @bind-Value="petViewModel.Breed" />
-                        <ValidationMessage For="@(() => petViewModel.Breed)" />
+                    <!-- Right Column - Pet Display Picture and Images -->
+                    <div class="col-lg-4">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><Icon Name="IconName.Image" class="me-2" />Display Picture</h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <InputFile id="photos" class="form-control mb-3" multiple OnChange="LoadFiles" accept="image/*" />
+                                        <small class="text-muted mb-3 d-block">Upload multiple photos of the pet</small>
+                                        @if (petViewModel.PetPhotos != null && petViewModel.PetPhotos.Any())
+                                        {
+                                            @foreach (var (image, index) in petViewModel.PetPhotos.Select((img, i) => (img, i)))
+                                            {
+                                                <div class="col-6">
+                                                    <div class="position-relative">
+                                                        <img src="@($"{Configuration["BlazorApiUrl"]}{image.PhotoUrl}")" alt="Pet photo @(index + 1)"
+                                                             class="img-fluid rounded shadow-sm"
+                                                             style="height: 80px; width: 100%; object-fit: cover;" />
+                                                        <button type="button" @onclick="() => DeletePetPhoto(image.Id)" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle p-1" style="margin: 2px;">
+                                                            <Icon Name="IconName.X" Size="IconSize.x6" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="age">Age:</label>
-                <InputNumber id="age" class="form-control" @bind-Value="petViewModel.Age" />
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <InputTextArea id="description" class="form-control" @bind-Value="petViewModel.Description" />
-            </div>
-
-            <div class="form-group">
-                <CheckboxInput id="chkMicrochipped" Label="Microchipped" @bind-Value="petViewModel.Microchipped" />
-            </div>
-
-            <div class="form-group">
-                <label for="goodWithKids">Good with Kids:</label>
-                <InputCheckbox id="goodWithKids" class="form-control" @bind-Value="petViewModel.GoodWithKids" />
-            </div>
-
-            <div class="form-group">
-                <label for="goodWithOtherPets">Good with Other Pets:</label>
-                <InputCheckbox id="goodWithOtherPets" class="form-control" @bind-Value="petViewModel.GoodWithOtherPets" />
-            </div>
-
-            <div class="form-group">
-                <label for="adoptionFee">Adoption Fee:</label>
-                <InputNumber id="adoptionFee" class="form-control" @bind-Value="petViewModel.AdoptionFee" />
-            </div>
-
-            <div class="form-group">
-                <label for="adoptableSince">Adoptable Since:</label>
-                <InputDate id="adoptableSince" class="form-control" @bind-Value="petViewModel.AdoptableSince" />
-            </div>
-
-            <div class="form-group">
-                <label for="location">Location:</label>
-                <InputText id="location" class="form-control" @bind-Value="petViewModel.Location" />
-            </div>
-
-            <div class="form-group">
-                <label for="photo">Photo (Base64):</label>
-              @*   <InputText id="photo" class="form-control" @bind-Value="petViewModel.Photo" /> *@
-                <InputFile id="photos" class="form-control" @bind-Value="petViewModel.UploadedImages" multiple OnChange="LoadFiles" />
-            </div>
-
-            <div class="form-group">
-                <label for="contactInformation">Contact Information:</label>
-                <InputNumber id="contactInformation" class="form-control" @bind-Value="petViewModel.ContactInformation" />
-            </div>
-
-            <!-- Species dropdown -->
-            <div class="form-group">
-                <label for="species">Species:</label>
-                <InputSelect id="species" class="form-control" @bind-Value="petViewModel.Species">
-                    @foreach (var species in Enum.GetValues<Species>())
-                    {
-                        <option value="@species">@species</option>
-                    }
-                </InputSelect>
-            </div>
-
-            <!-- Gender dropdown -->
-            <div class="form-group">
-                <label for="gender">Gender:</label>
-                <InputSelect id="gender" class="form-control" @bind-Value="petViewModel.Gender">
-                    <option value="@AnimalGender.Male">Male</option>
-                    <option value="@AnimalGender.Femlae">Female</option>
-                </InputSelect>
-            </div>
-
-            <!-- Color dropdown -->
-            <div class="form-group">
-                <label for="color">Color:</label>
-                <InputSelect id="color" class="form-control" @bind-Value="petViewModel.Color">
-                    @foreach (var color in Enum.GetValues<AnimalColor>())
-                    {
-                        <option value="@color">@color</option>
-                    }
-                </InputSelect>
-            </div>
-
-            <!-- Health Status dropdown -->
-            <div class="form-group">
-                <label for="healthStatus">Health Status:</label>
-                <InputSelect id="healthStatus" class="form-control" @bind-Value="petViewModel.HealthStatus">
-                    @foreach (var healthStatus in Enum.GetValues<HealthStatus>())
-                    {
-                        <option value="@healthStatus">@healthStatus</option>
-                    }
-                </InputSelect>
-            </div>
-
-            <Button Color="ButtonColor.Secondary" @onclick="OnHideModal">Close</Button>
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save changes</Button>
         </EditForm>
     </BodyTemplate>
+
+    <FooterTemplate>
+        <div class="d-flex justify-content-between w-100">
+            <Button Color="ButtonColor.Secondary" @onclick="OnHideModal">
+                <Icon Name="IconName.X" class="me-2" />Cancel
+            </Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="petForm">
+                <Icon Name="IconName.Save" class="me-2" />Save Pet
+            </Button>
+        </div>
+    </FooterTemplate>
 </Modal>
 
-<Grid TItem="PetViewModel" Data="@pets" Class="table table-hover table-bordered table-striped" Responsive="true"
-      AllowFiltering="true"
-      AllowPaging="true"
-      PageSize="5"
-      AllowSorting="true">
-    <GridColumns>
-        <GridColumn TItem="PetViewModel" HeaderText="Name" PropertyName="Name" SortKeySelector="item => item.Name">
-            @context.Name
-        </GridColumn>
-        <GridColumn TItem="PetViewModel" HeaderText="Age" PropertyName="Age" SortKeySelector="item => item.Age">
-            @context.Age
-        </GridColumn>
-    </GridColumns>
-</Grid>
+
+<!-- Grid design -->
+<!-- Pet Management Header -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                Pet Management
+            </h4>
+            <div class="d-flex gap-2">
+                <Button Color="ButtonColor.Light" Size="ButtonSize.Small" @onclick="RefreshGrid">
+                    <Icon Name="IconName.RewindBtn" class="me-1" />Refresh
+                </Button>
+                <Button Color="ButtonColor.Success" @onclick="OnShowModal">
+                    <Icon Name="IconName.Plus" class="me-2" />Add New Pet
+                </Button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Grid Container -->
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h6 class="mb-0 text-primary">
+                    Pet List
+                </h6>
+            </div>
+            <div class="col-md-6 text-end">
+                <small class="text-muted">
+                    <Icon Name="IconName.Database" class="me-1" />
+                    Total: @petsList?.Count() pets
+                </small>
+            </div>
+        </div>
+    </div>
+
+    @if (petsList == null || petsList.Count == 0)
+    {
+        <p>No pets found.</p>
+    }
+    else
+    {
+        <div class="card-body p-0">
+            <Grid TItem="PetViewModel"
+                  Data="@petsList"
+                  Class="table table-hover mb-0"
+                  Responsive="true"
+                  AllowFiltering="true"
+                  AllowPaging="true"
+                  PageSize="10"
+                  AllowSorting="true"
+                  EmptyText="No pets found. Click 'Add New Pet' to get started!"
+                  LoadingText="Loading adorable pets...">
+
+                <GridColumns>
+                    <!-- Pet Photo & Name Column -->
+                    <GridColumn TItem="PetViewModel" HeaderText="Pet" PropertyName="Name" SortKeySelector="item => item.Name">
+                        <HeaderContent>
+                            <Icon Name="IconName.Heart" class="me-1 text-danger" />
+                            <strong>Name/Breed</strong>
+                        </HeaderContent>
+                        <ChildContent>
+                            <div class="d-flex align-items-center py-2">
+                                <div class="me-3">
+                                    @if (context.PetPhotos != null && context.PetPhotos.Any())
+                                    {
+                                        <img src="@($"{Configuration["BlazorApiUrl"]}{context.PetPhotos.First().PhotoUrl}")" alt="@context.Name"
+                                             class="rounded-circle shadow-sm"
+                                             style="width: 50px; height: 50px; object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm"
+                                             style="width: 50px; height: 50px;">
+                                            <Icon Name="IconName.Camera" class="text-muted" />
+                                        </div>
+                                    }
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-primary">@context.Name</h6>
+                                    <small class="text-muted">
+                                        <Icon Name="IconName.Briefcase" class="me-1" />@context.Breed
+                                    </small>
+                                </div>
+                            </div>
+                        </ChildContent>
+                    </GridColumn>
+
+                    <!-- Age & Species Column -->
+                    <GridColumn TItem="PetViewModel" HeaderText="Info" PropertyName="Age" SortKeySelector="item => item.Age">
+                        <HeaderContent>
+                            <Icon Name="IconName.Info" class="me-1 text-info" />
+                            <strong>Basic Info</strong>
+                        </HeaderContent>
+                        <ChildContent>
+                            <div class="py-2">
+                                <div class="mb-1">
+                                    <small class="text-muted">Age:</small>
+                                    <span class="badge bg-info ms-1">
+                                        <Icon Name="IconName.Clock" class="me-1" Size="IconSize.x5" />
+                                        @context.Age years
+                                    </span>
+                                </div>
+                                <div class="mb-1">
+                                    <small class="text-muted">Species:</small>
+                                    <span class="badge bg-secondary ms-1">@context.Species</span>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Gender:</small>
+                                    <span class="badge @(context.Gender == AnimalGender.Male ? "bg-primary" : "bg-pink") ms-1">
+                                        @context.Gender
+                                    </span>
+                                </div>
+                            </div>
+                        </ChildContent>
+                    </GridColumn>
+
+                    <!-- Health & Status Column -->
+                    <GridColumn TItem="PetViewModel" HeaderText="Health" PropertyName="HealthStatus">
+                        <HeaderContent>
+                            <Icon Name="IconName.Activity" class="me-1 text-success" />
+                            <strong>Health Status</strong>
+                        </HeaderContent>
+                        <ChildContent>
+                            <div class="py-2">
+                                <span class="badge @GetHealthStatusBadgeClass(context.HealthStatus) mb-2">
+                                    <Icon Name="IconName.Heart" class="me-1" Size="IconSize.x5" />
+                                    @context.HealthStatus
+                                </span>
+                                <div class="small">
+                                    @if (context.Microchipped)
+                                    {
+                                        <span class="badge bg-success me-1">
+                                            <Icon Name="IconName.Shield" class="me-1" Size="IconSize.x5" />
+                                            Microchipped
+                                        </span>
+                                    }
+                                    @if (context.GoodWithKids)
+                                    {
+                                        <span class="badge bg-warning me-1">
+                                            <Icon Name="IconName.Person" class="me-1" Size="IconSize.x5" />
+                                            Kid-Friendly
+                                        </span>
+                                    }
+                                    @if (context.GoodWithOtherPets)
+                                    {
+                                        <span class="badge bg-info">
+                                            <Icon Name="IconName.Heart" class="me-1" Size="IconSize.x5" />
+                                            Pet-Friendly
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </ChildContent>
+                    </GridColumn>
+
+                    <!-- Adoption Info Column -->
+                    <GridColumn TItem="PetViewModel" HeaderText="Adoption" PropertyName="AdoptionFee" SortKeySelector="item => item.AdoptionFee">
+                        <HeaderContent>
+                            <Icon Name="IconName.CurrencyDollar" class="me-1 text-warning" />
+                            <strong>Adoption Info</strong>
+                        </HeaderContent>
+                        <ChildContent>
+                            <div class="py-2">
+                                <div class="mb-2">
+                                    <h6 class="mb-0 text-success fw-bold">
+                                        $ @context.AdoptionFee?.ToString("N2")
+                                    </h6>
+                                    <small class="text-muted">Adoption Fee</small>
+                                </div>
+                                <div class="mb-1">
+                                    <small class="text-muted">
+                                        <Icon Name="IconName.Calendar" class="me-1" />
+                                        Available since: @context.AdoptableSince?.ToString("MMM dd, yyyy")
+                                    </small>
+                                </div>
+                                <div>
+                                    <small class="text-muted">
+                                        <Icon Name="IconName.PinMap" class="me-1" />
+                                        @context.Location
+                                    </small>
+                                </div>
+                            </div>
+                        </ChildContent>
+                    </GridColumn>
+
+                    <!-- Actions Column -->
+                    <GridColumn TItem="PetViewModel" HeaderText="Actions">
+                        <HeaderContent>
+                            <Icon Name="IconName.Gear" class="me-1 text-secondary" />
+                            <strong>Actions</strong>
+                        </HeaderContent>
+                        <ChildContent>
+                            <div class="d-flex gap-1 py-2">
+                                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ViewPet(context)">
+                                    <Icon Name="IconName.Eye" Size="IconSize.x5" />
+                                </Button>
+                                <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="() => EditPet(context.Id)">
+                                    <Icon Name="IconName.Pencil" Size="IconSize.x5" />
+                                </Button>
+                                <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => DeletePet(context.Id)">
+                                    <Icon Name="IconName.Trash2" Size="IconSize.x5" />
+                                </Button>
+                            </div>
+                        </ChildContent>
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </div>
+    }
+
+</div>

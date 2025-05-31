@@ -1,25 +1,40 @@
 ﻿using BlazorBootstrap;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.Logging;
 using PetAdoption.UI.Components.Models;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PetAdoption.UI.Components.Pages.Pets
 {
+    public record Base64ImageFile(string FileName, string Base64Data);
+   // public record Base64UploadRequest(int PetId, List<Base64ImageFile> Images);
+
+    public class Base64UploadRequest
+    {
+        public int PetId { get; set; }
+        public List<Base64ImageFile> Images { get; set; }
+    }
     public partial class List
     {
-        private List<PetViewModel> pets = new()
-    {
-        new PetViewModel { Name = "Buddy", Age = 12 },
-        new PetViewModel { Name = "Luna", Age = 09},
-        new PetViewModel { Name = "Max", Age = 56 }
-    };
-
-        private Modal modal;
+        private List<PetViewModel> petsList = new();
         private PetViewModel petViewModel = new PetViewModel();
+        private List<IBrowserFile> loadedFiles = [];
+        private Modal modal = new Modal();
+        private bool isLoading = false;
+        public IBrowserFile[] UploadedImages { get; set; }
+
+
+        protected override async Task OnInitializedAsync()
+        {
+            await RefreshGrid();
+        }
 
         private async Task OnShowModal()
         {
+            petViewModel = new PetViewModel();
+            EditContext editContext = new EditContext(petViewModel);
             await modal.ShowAsync();
         }
 
@@ -28,58 +43,229 @@ namespace PetAdoption.UI.Components.Pages.Pets
             await modal.HideAsync();
         }
 
-        private List<IBrowserFile> loadedFiles = [];
-        private long maxFileSize = 1024 * 15;
-        private int maxAllowedFiles = 3;
-        private bool isLoading;
-
-
         private async Task LoadFiles(InputFileChangeEventArgs e)
         {
             try
             {
-                isLoading = true;
+                PreloadService.Show();
                 loadedFiles.Clear();
-                int petId = 2;
 
                 var files = e.GetMultipleFiles();
-                MultipartFormDataContent content = new MultipartFormDataContent();
-                foreach (var file in files)
-                {
-                    var fileStream = file.OpenReadStream(10 * 1024 * 1024); // max 10MB
-                    var streamContent = new StreamContent(fileStream);
-                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                    content.Add(streamContent, "Files", file.Name);
-                }
-
-                // Add petId
-                content.Add(new StringContent(petId.ToString()), "PetId");
-
-                var response = await Http.PostAsync("/api/Pets/upload-pet-files", content);
-
-                isLoading = false;
+                UploadedImages = files.ToArray();
+                //content = new MultipartFormDataContent();
+                //foreach (var file in files)
+                //{
+                //    using var fileStream = file.OpenReadStream(10 * 1024 * 1024); // max 10MB
+                //    using var streamContent = new StreamContent(fileStream);
+                //    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                //    content.Add(streamContent, "Files", file.Name);
+                //}
             }
-            catch (Exception ex)
+            catch
             {
-
-                throw ex;
+                PreloadService.Hide();
+                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+            }
+            finally
+            {
+                PreloadService.Hide();
             }
         }
 
-        private async Task HandleValidSubmit()
+        private async Task DeletePetPhoto(int photoId)
         {
-            var response = await Http.PostAsJsonAsync("AddPet", petViewModel);
+            HttpResponseMessage? response = null;
+            try
+            {
+                PreloadService.Show();
+                response = await Http.DeleteAsync($"/api/Pets/DeletePhoto/{photoId}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Optionally show a success message, close modal, etc.
-                Console.WriteLine("Pet added successfully.");
-                modal.Hide();
+                // grid refresh with db calling
+                var petToRemove = petViewModel.PetPhotos.FirstOrDefault(p => p.Id == photoId);
+                if (petToRemove != null)
+                {
+                    petViewModel.PetPhotos = petViewModel.PetPhotos.Where(p => p.Id != photoId).ToList();
+                }
+
+                // render UI
+                StateHasChanged();
             }
-            else
+            catch
             {
-                // Handle errors (e.g., log or show to user)
-                Console.WriteLine("Error: " + response.ReasonPhrase);
+                PreloadService.Hide();
+                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+            }
+            finally
+            {
+                PreloadService.Hide();
+                if (response is null || !response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+                else ToastService.Notify(new ToastMessage(ToastType.Success, IconName.Bug, "Success", $"Deleted Successfully"));
+            }
+        }
+
+        private async Task SavePet()
+        {
+            HttpResponseMessage? response = null;
+            try
+            {
+                PreloadService.Show();
+
+                if (petViewModel.Id > 0)
+                     response = await Http.PutAsJsonAsync("/api/Pets/Update", petViewModel);
+                else
+                    response = await Http.PostAsJsonAsync("/api/Pets/Add", petViewModel);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    ToastService.Notify(new ToastMessage(ToastType.Danger, $"{petViewModel.Name} not saved successfully! Please try again"));
+                    return;
+                }
+
+                petViewModel = await response.Content.ReadFromJsonAsync<PetViewModel>();
+                if (petViewModel != null)
+                {
+                   // MultipartFormDataContent? content = new MultipartFormDataContent();
+                    // Add petId
+                   // content.Add(new StringContent(petViewModel.Id.ToString()), "PetId");
+                    List<Base64ImageFile> images = new List<Base64ImageFile>();
+
+                    foreach (var file in UploadedImages)
+                    {
+                         var fileStream = file.OpenReadStream(10 * 1024 * 1024); // max 10MB
+                        var streamContent = new StreamContent(fileStream);
+
+                        using var ms = new MemoryStream();
+                        await fileStream.CopyToAsync(ms);
+                        var bytes = ms.ToArray();
+
+                        var base64 = Convert.ToBase64String(bytes);
+
+                        var base64WithPrefix = $"data:{file.ContentType};base64,{base64}";
+
+                        images.Add(new Base64ImageFile(file.Name, base64WithPrefix));
+
+                        //streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                        //content.Add(streamContent, "Files", file.Name);
+                    }
+
+                    Base64UploadRequest payload = new Base64UploadRequest() { PetId = petViewModel.Id, Images = images };
+
+                    var json = JsonSerializer.Serialize(payload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var filesResponse = await Http.PostAsJsonAsync("/api/Pets/Upload-pet-files", payload);
+
+                    if (!filesResponse.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Files not saved successfully!"));
+
+                    ToastService.Notify(new ToastMessage(ToastType.Success, $"{petViewModel.Name} is saved successfully"));
+                }
+            }
+            catch (Exception ex)
+            {
+                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+                PreloadService.Hide();
+            }
+            finally
+            {
+                PreloadService.Hide();
+                await modal.HideAsync();
+            }
+        }
+
+        private string GetHealthStatusBadgeClass(HealthStatus status)
+        {
+            return status switch
+            {
+                HealthStatus.GoodHealth => "bg-success",
+                HealthStatus.Vaccinated => "bg-primary",
+                HealthStatus.SpecialMedicalNeeds => "bg-warning",
+                HealthStatus.UnderTreatment => "bg-danger",
+                _ => "bg-secondary"
+            };
+        }
+
+        private void ViewPet(PetViewModel pet)
+        {
+            // View pet details logic
+        }
+
+        private async Task EditPet(int petId)
+        {
+            HttpResponseMessage? response = null;
+
+            try
+            {
+                PreloadService.Show();
+                response = await Http.GetAsync($"/api/Pets/Get/{petId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    petViewModel = await response.Content.ReadFromJsonAsync<PetViewModel>();
+                    EditContext editContext = new EditContext(petViewModel);
+                    await modal.ShowAsync();
+                }
+
+            }
+            catch
+            {
+                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+            }
+            finally
+            {
+                PreloadService.Hide();
+            }
+        }
+
+        private async Task DeletePet(int petId)
+        {
+            HttpResponseMessage? response = null;
+            try
+            {
+                PreloadService.Show();
+                response = await Http.DeleteAsync($"/api/Pets/Delete/{petId}");
+
+                // grid refresh with db calling
+                var petToRemove = petsList.FirstOrDefault(p => p.Id == petId);
+                if (petToRemove != null)
+                {
+                    petsList = petsList.Where(p => p.Id != petId).ToList();
+                }
+
+                // render UI
+                StateHasChanged();
+            }
+            catch
+            {
+                PreloadService.Hide();
+                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+            }
+            finally
+            {
+                PreloadService.Hide();
+                if (response is null || !response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+                else ToastService.Notify(new ToastMessage(ToastType.Success, IconName.Bug, "Success", $"Deleted Successfully"));
+            }
+        }
+
+        private async Task RefreshGrid()
+        {
+            PreloadService.Show();
+            try
+            {
+                var response = await Http.GetAsync("/api/Pets/get-list");
+                if (!response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+
+                petsList = await response.Content.ReadFromJsonAsync<List<PetViewModel>>();
+                isLoading = true;
+            }
+            catch
+            {
+                PreloadService.Hide();
+                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+            }
+            finally
+            {
+                PreloadService.Hide();
             }
         }
     }

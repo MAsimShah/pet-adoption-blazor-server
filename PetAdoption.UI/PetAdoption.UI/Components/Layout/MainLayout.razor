@@ -1,19 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
+<Toasts class="p-3" AutoHide="true" Placement="ToastsPlacement.TopRight" />
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <ErrorBoundary>
+        <ChildContent>
+            <main>
+                <div class="top-row px-4">
+                    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+                </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+                <article class="content px-4">
+                    @Body
+                </article>
+                <Preload LoadingText="Loading..." />
+            </main>
+        </ChildContent>
+        <ErrorContent>
+            <div class="alert alert-danger">
+                Oops! Something went wrong. 22222222
+            </div>
+        </ErrorContent>
+    </ErrorBoundary>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
