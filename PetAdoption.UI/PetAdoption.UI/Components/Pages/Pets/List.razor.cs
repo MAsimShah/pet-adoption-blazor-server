@@ -122,11 +122,8 @@ namespace PetAdoption.UI.Components.Pages.Pets
                 }
 
                 petViewModel = await response.Content.ReadFromJsonAsync<PetViewModel>();
-                if (petViewModel != null)
+                if (petViewModel != null && UploadedImages != null && UploadedImages.Any())
                 {
-                   // MultipartFormDataContent? content = new MultipartFormDataContent();
-                    // Add petId
-                   // content.Add(new StringContent(petViewModel.Id.ToString()), "PetId");
                     List<Base64ImageFile> images = new List<Base64ImageFile>();
 
                     foreach (var file in UploadedImages)
@@ -143,9 +140,6 @@ namespace PetAdoption.UI.Components.Pages.Pets
                         var base64WithPrefix = $"data:{file.ContentType};base64,{base64}";
 
                         images.Add(new Base64ImageFile(file.Name, base64WithPrefix));
-
-                        //streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                        //content.Add(streamContent, "Files", file.Name);
                     }
 
                     Base64UploadRequest payload = new Base64UploadRequest() { PetId = petViewModel.Id, Images = images };
@@ -169,6 +163,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
             {
                 PreloadService.Hide();
                 await modal.HideAsync();
+                await RefreshGrid();
             }
         }
 

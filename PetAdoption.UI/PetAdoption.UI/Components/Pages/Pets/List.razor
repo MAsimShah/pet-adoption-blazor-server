@@ -183,19 +183,21 @@
                                         <small class="text-muted mb-3 d-block">Upload multiple photos of the pet</small>
                                         @if (petViewModel.PetPhotos != null && petViewModel.PetPhotos.Any())
                                         {
-                                            @foreach (var (image, index) in petViewModel.PetPhotos.Select((img, i) => (img, i)))
-                                            {
-                                                <div class="col-6">
-                                                    <div class="position-relative">
-                                                        <img src="@($"{Configuration["BlazorApiUrl"]}{image.PhotoUrl}")" alt="Pet photo @(index + 1)"
-                                                             class="img-fluid rounded shadow-sm"
-                                                             style="height: 80px; width: 100%; object-fit: cover;" />
-                                                        <button type="button" @onclick="() => DeletePetPhoto(image.Id)" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle p-1" style="margin: 2px;">
-                                                            <Icon Name="IconName.X" Size="IconSize.x6" />
-                                                        </button>
+                                            <div class="row">
+                                                @foreach (var (image, index) in petViewModel.PetPhotos.Select((img, i) => (img, i)))
+                                                {
+                                                    <div class="col-6">
+                                                        <div class="position-relative">
+                                                            <img src="@($"{Configuration["BlazorApiUrl"]}{image.PhotoUrl}")" alt="Pet photo @(index + 1)"
+                                                                 class="img-fluid rounded shadow-sm"
+                                                                 style="height: 80px; width: 100%; object-fit: cover;" />
+                                                            <button type="button" @onclick="() => DeletePetPhoto(image.Id)" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle p-1" style="margin: 2px;">
+                                                                <Icon Name="IconName.X" Size="IconSize.x6" />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            }
+                                                }
+                                            </div>
                                         }
                                     </div>
                                 </div>
