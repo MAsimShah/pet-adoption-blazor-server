@@ -1,0 +1,83 @@
+﻿@page "/signup"
+@inject HttpClient Http
+@inject ToastService ToastService
+@inject PreloadService PreloadService
+@inject NavigationManager _Naivigation
+
+<PageTitle>Signup - PetAdoption</PageTitle>
+
+<style>
+    :root {
+        --primary-color: #6c63ff;
+        --secondary-color: #f5f5f5;
+        --text-color: #333;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+        height: 100vh !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+</style>
+
+<div class="container">
+    <div class="login-container fadeIn">
+        <div class="row g-0">
+            <div class="col-md-6 d-none d-md-block login-image">
+                <!-- Background image set in CSS -->
+            </div>
+            <div class="col-md-6 login-form">
+                <div class="welcome-text">
+                    <h2>Welcome Pet Adoption</h2>
+                    <p>Please sign up to start adopting a pet</p>
+                </div>
+
+                <EditForm Model="@register" OnValidSubmit="RegisterUser">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-control">
+                        <label class="form-label"> Name <span class="text-danger">*</span></label>
+                        <InputText class="form-control" @bind-Value="register.Name" placeholder="Name" />
+                        <ValidationMessage For="@(() => register.Name)" class="text-danger small" />
+                    </div>
+                    <div class="form-control">
+                        <label class="form-label"> Email <span class="text-danger">*</span></label>
+                        <InputText class="form-control" @bind-Value="register.Email" placeholder="Email" />
+                        <ValidationMessage For="@(() => register.Email)" class="text-danger small" />
+                    </div>
+                    <div class="form-control">
+                        <label class="form-label"> Password <span class="text-danger">*</span></label>
+                        <InputText class="form-control" @bind-Value="register.Password" placeholder="Password" />
+                        <ValidationMessage For="@(() => register.Password)" class="text-danger small" />
+                    </div>
+                    <div class="form-control">
+                        <label class="form-label"> Confirm Password <span class="text-danger">*</span></label>
+                        <InputText class="form-control" @bind-Value="register.ConfirmPassword" placeholder="Confirm Password" />
+                        <ValidationMessage For="@(() => register.ConfirmPassword)" class="text-danger small" />
+                    </div>
+                    <div class="form-control">
+                        <label class="form-label"> Phone # <span class="text-danger">*</span></label>
+                        <InputText class="form-control" @bind-Value="register.PhoneNumber" placeholder="Phone Number" />
+                        <ValidationMessage For="@(() => register.PhoneNumber)" class="text-danger small" />
+                    </div>
+                    <div class="form-control">
+                        <Button Color="ButtonColor.Secondary">
+                            <Icon Name="IconName.X" class="me-2" />Cancel
+                        </Button>
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                            <Icon Name="IconName.Save2" class="me-2" />Register
+                        </Button>
+                    </div>
+                </EditForm>
+
+                <div class="signup-link">
+                    <p>Do you have an account? <a href="/login">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
