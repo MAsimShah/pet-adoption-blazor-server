@@ -1,0 +1,82 @@
+﻿
+
+
+
+.login-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 900px;
+    max-width: 100%;
+}
+
+.row {
+    height: 100%;
+}
+
+.login-image {
+    background: url('/images/loginpage.jpeg') center/cover;
+    border-radius: 10px 0 0 10px;
+    min-height: 400px;
+}
+
+.login-form {
+    padding: 3rem;
+}
+
+.welcome-text {
+    margin-bottom: 2rem;
+}
+
+    .welcome-text h2 {
+        color: var(--text-color);
+        font-weight: 700;
+    }
+
+    .welcome-text p {
+        color: #888;
+    }
+
+.form-control {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    padding: 0.75rem 0;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+    .form-control:focus {
+        box-shadow: none;
+        border-color: var(--primary-color);
+    }
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .login-image {
+        min-height: 200px;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .login-form {
+        padding: 2rem;
+    }
+}
