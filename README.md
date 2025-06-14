@@ -47,7 +47,7 @@ It’s ideal for developers exploring:
 
 ---
 
-🧑‍💻 Suggestions & Feedback
+### 🧑‍💻 Suggestions & Feedback
 This is a personal project and not open to direct contributions at the moment. However, suggestions, feature requests, and feedback are always welcome!
 
 If you have ideas or want to report issues, feel free to:
