@@ -44,3 +44,14 @@ It’s ideal for developers exploring:
 2. Clone Web API (.NET 9) repository:
    ```bash
    git clone https://github.com/MAsimShah/pet-adoption-api.git
+
+---
+
+🧑‍💻 Suggestions & Feedback
+This is a personal project and not open to direct contributions at the moment. However, suggestions, feature requests, and feedback are always welcome!
+
+If you have ideas or want to report issues, feel free to:
+
+📩 Contact me directly via [shahasim190@gmail.com]
+
+📬 Open an issue on the GitHub repository
