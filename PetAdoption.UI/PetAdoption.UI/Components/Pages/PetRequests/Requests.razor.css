@@ -1,0 +1,5 @@
+﻿.bb-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 18px 31px 32px 10px rgba(0,0,0,0.1);
+}
