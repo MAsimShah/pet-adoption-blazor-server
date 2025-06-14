@@ -2,6 +2,9 @@
 
 Welcome to the **Pet Adoption Portal**, a full-stack web application for managing pet adoptions, built with **Blazor Server** and **ASP.NET Core Web API**. This modern and responsive platform bridges the gap between animal shelters and loving adopters, offering a seamless pet adoption experience.
 
+## API Project:
+- [https://github.com/MAsimShah/pet-adoption-api]
+
 ## 🐶 About the Project
 
 The **Pet Adoption Portal** is designed for users to:
