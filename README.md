@@ -31,6 +31,7 @@ It’s ideal for developers exploring:
 - **SignalR** (real-time notifications)
 - **Dependency Injection**
 - **JWT Authentication** or **ASP.NET Identity** (planned)
+- **Refit** -  library heavily inspired by Square's Retrofit library, and it turns your REST API into a live interface [https://www.nuget.org/packages/refit.httpclientfactory]
 
 ---
 
