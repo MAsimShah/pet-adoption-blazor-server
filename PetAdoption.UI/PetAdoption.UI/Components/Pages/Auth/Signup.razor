@@ -1,5 +1,5 @@
 ﻿@page "/signup"
-@inject HttpClient Http
+@inject IPetAdoptionAPI petAPI
 @inject ToastService ToastService
 @inject PreloadService PreloadService
 @inject NavigationManager _Naivigation
@@ -23,6 +23,7 @@
     }
 </style>
 
+<Toasts class="p-3" AutoHide="true" Placement="ToastsPlacement.TopRight" />
 <div class="container">
     <div class="login-container fadeIn">
         <div class="row g-0">
@@ -50,17 +51,22 @@
                     </div>
                     <div class="form-control">
                         <label class="form-label"> Password <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="register.Password" placeholder="Password" />
+                        <PasswordInput class="form-control" @bind-Value="register.Password" placeholder="Password" />
                         <ValidationMessage For="@(() => register.Password)" class="text-danger small" />
                     </div>
                     <div class="form-control">
                         <label class="form-label"> Confirm Password <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="register.ConfirmPassword" placeholder="Confirm Password" />
+                        <PasswordInput class="form-control" @bind-Value="register.ConfirmPassword" placeholder="Confirm Password" />
                         <ValidationMessage For="@(() => register.ConfirmPassword)" class="text-danger small" />
                     </div>
                     <div class="form-control">
                         <label class="form-label"> Phone # <span class="text-danger">*</span></label>
                         <InputText class="form-control" @bind-Value="register.PhoneNumber" placeholder="Phone Number" />
+                        <ValidationMessage For="@(() => register.PhoneNumber)" class="text-danger small" />
+                    </div>
+                    <div class="form-control">
+                        <label class="form-label"> Phone # <span class="text-danger">*</span></label>
+                        <InputFile id="photos" class="form-control mb-3" multiple OnChange="UploadProfilePhoto" accept="image/*" />
                         <ValidationMessage For="@(() => register.PhoneNumber)" class="text-danger small" />
                     </div>
                     <div class="form-control">
