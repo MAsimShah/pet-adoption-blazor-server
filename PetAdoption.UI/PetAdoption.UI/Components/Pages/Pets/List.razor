@@ -3,6 +3,9 @@
 @inject ToastService ToastService
 @inject PreloadService PreloadService
 @inject IConfiguration Configuration
+@attribute [Authorize]
+
+<PageTitle>Pets - PetAdoption</PageTitle>
 
 <!-- Enhanced Modal -->
 <Modal @ref="modal" Title="Add New Pet" IsScrollable="true" Size="ModalSize.ExtraLarge" IsBackdropDismissible="false">

@@ -1,6 +1,7 @@
 ﻿using BlazorBootstrap;
 using Microsoft.AspNetCore.Components.Forms;
 using PetAdoption.UI.Components.Models;
+using PetAdoption.UI.Components.Models.DTOs;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -8,8 +9,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace PetAdoption.UI.Components.Pages.Pets
 {
-    public record Base64ImageFile(string FileName, string Base64Data);
-   // public record Base64UploadRequest(int PetId, List<Base64ImageFile> Images);
 
     public class Base64UploadRequest
     {
@@ -52,14 +51,6 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
                 var files = e.GetMultipleFiles();
                 UploadedImages = files.ToArray();
-                //content = new MultipartFormDataContent();
-                //foreach (var file in files)
-                //{
-                //    using var fileStream = file.OpenReadStream(10 * 1024 * 1024); // max 10MB
-                //    using var streamContent = new StreamContent(fileStream);
-                //    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                //    content.Add(streamContent, "Files", file.Name);
-                //}
             }
             catch
             {
