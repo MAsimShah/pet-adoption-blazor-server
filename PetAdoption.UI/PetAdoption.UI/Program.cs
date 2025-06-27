@@ -1,6 +1,11 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Blazored.LocalStorage;
+using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using PetAdoption.UI.Auth;
 using PetAdoption.UI.Components;
-using PetAdoption.UI.Helpers;
+using PetAdoption.UI.Interfaces;
+using PetAdoption.UI.Services;
 using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,16 +15,21 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/login";  // Make sure this path corresponds to your login page
-    });
+builder.Services.AddRefitClient<IPetAdoptionAPI>().ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7039"));
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7039") });
+
+builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, CustomJwtAuthenticateHandler>("jwt", options => { });
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState(); // implment cascading state
 
-builder.Services.AddRefitClient<IPetAdoptionAPI>().ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7039"));
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7039") });
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddScoped<LocalStorageService>();
+builder.Services.AddScoped<CookieStorageService>();
+//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
+    provider.GetRequiredService<CustomAuthStateProvider>());
 
 var app = builder.Build();
 
@@ -32,8 +42,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();

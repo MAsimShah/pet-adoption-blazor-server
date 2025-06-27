@@ -1,15 +1,13 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
-
-<CascadingAuthenticationState>
+﻿<CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="routeData">
                 <NotAuthorized>
-                    <PetAdoption.UI.Components.Pages.Auth.Signup />
+                    <PetAdoption.UI.Components.Pages.Auth.Login />
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="routeData" Selector="h1" />
         </Found>
     </Router>
 </CascadingAuthenticationState>
-<HeadOutlet />
+<HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)" />

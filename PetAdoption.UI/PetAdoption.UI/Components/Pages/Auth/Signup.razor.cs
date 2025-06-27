@@ -1,19 +1,19 @@
 ﻿using BlazorBootstrap;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Forms;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.DTOs;
-using PetAdoption.UI.Components.Pages.Pets;
-using static System.Net.Mime.MediaTypeNames;
+using System.Security.Claims;
 
 namespace PetAdoption.UI.Components.Pages.Auth
 {
     public record RegisterDto(string Name, string Email, string Password, string PhoneNumber, Gender Gender, Base64ImageFile? ProfilePhoto);
-    public record TokenResponse(string? RefreshToken, DateTime? RefreshTokenExpiryTime);
+    public record TokenResponse(string AccessToken, string RefreshToken);
 
     public partial class Signup
     {
         private RegisterViewModel register = new RegisterViewModel();
-        public IBrowserFile ProfileFile { get; set; }
+        public IBrowserFile ProfileFile { get; set; } = null;
 
         private void UploadProfilePhoto(InputFileChangeEventArgs e)
         {
@@ -45,9 +45,9 @@ namespace PetAdoption.UI.Components.Pages.Auth
                     profileImage = new Base64ImageFile(ProfileFile.Name, base64WithPrefix);
                 }
 
-                TokenResponse tokens = await petAPI.RegisterUserAsync(new RegisterDto(register.Name, register.Email, register.Password, register.PhoneNumber, register.Gender, profileImage));
+                AuthToken token = await petAPI.RegisterUserAsync(new RegisterDto(register.Name, register.Email, register.Password, register.PhoneNumber, register.Gender, profileImage));
 
-                if (tokens != null)
+                if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {
                     ToastService.Notify(new ToastMessage(ToastType.Danger, $"{register.Name} not saved successfully! Please try again"));
                     return;
@@ -55,6 +55,13 @@ namespace PetAdoption.UI.Components.Pages.Auth
 
                 ToastService.Notify(new ToastMessage(ToastType.Success, $"{register.Name} user created successfully"));
 
+             //  var tt = await ((CustomAuthStateProvider)AuthState).GetAuthenticationStateAsync(); // .StartUserSession(user);
+
+                var claims = new List<Claim>{ new Claim(ClaimTypes.Name, "userName")};
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+              //  await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                // await AuthState.MarkUserAsAuthenticated(token);
                 _Naivigation.NavigateTo("/", true);
             }
             catch (Exception ex)

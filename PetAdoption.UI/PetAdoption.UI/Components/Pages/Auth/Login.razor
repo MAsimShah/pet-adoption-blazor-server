@@ -3,6 +3,9 @@
 @inject ToastService ToastService
 @inject PreloadService PreloadService
 @inject NavigationManager _Naivigation
+@inject CookieStorageService cookieService
+@inject CustomAuthStateProvider AuthState 
+
 
 <PageTitle>Login - PetAdoption</PageTitle>
 
@@ -24,6 +27,19 @@
 </style>
 
 <div class="container">
+    <AuthorizeView>
+        <Authorized>
+            <div>Hello, @context.User.Identity?.Name!</div>
+        </Authorized>
+        <NotAuthorized>
+            <div>You are not authorized person</div>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" @onclick="AuthUser">
+        <Icon Name="IconName.Save2" class="me-2" />Authorized
+    </Button>
+
     <div class="login-container fadeIn">
         <div class="row g-0">
             <div class="col-md-6 d-none d-md-block login-image">
@@ -65,3 +81,4 @@
         </div>
     </div>
 </div>
+

@@ -3,6 +3,8 @@
 @inject ToastService ToastService
 @inject PreloadService PreloadService
 @inject NavigationManager _Naivigation
+@inject LocalStorageService storage
+@* @inject CustomAuthStateProvider AuthState  *@
 
 <PageTitle>Signup - PetAdoption</PageTitle>
 
@@ -71,10 +73,10 @@
                     </div>
                     <div class="form-control">
                         <Button Color="ButtonColor.Secondary">
-                            <Icon Name="IconName.X" class="me-2" />Cancel
+                            <Icon Name="IconName.X" class="me-2" /> Cancel
                         </Button>
                         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
-                            <Icon Name="IconName.Save2" class="me-2" />Register
+                            <Icon Name="IconName.Save2" class="me-2" /> Register
                         </Button>
                     </div>
                 </EditForm>
@@ -86,4 +88,3 @@
         </div>
     </div>
 </div>
-
