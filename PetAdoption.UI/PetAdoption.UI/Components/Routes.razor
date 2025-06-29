@@ -1,7 +1,9 @@
-﻿<CascadingAuthenticationState>
+﻿@using PetAdoption.UI.Components.Layout
+
+<CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="routeData">
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
                 <NotAuthorized>
                     <PetAdoption.UI.Components.Pages.Auth.Login />
                 </NotAuthorized>

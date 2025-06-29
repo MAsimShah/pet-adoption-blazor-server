@@ -1,10 +1,12 @@
 ﻿@page "/signup"
+@using PetAdoption.UI.Components.Layout
 @inject IPetAdoptionAPI petAPI
 @inject ToastService ToastService
 @inject PreloadService PreloadService
 @inject NavigationManager _Naivigation
 @inject LocalStorageService storage
-@* @inject CustomAuthStateProvider AuthState  *@
+@inject CustomAuthStateProvider AuthState
+@layout EmptyLayout
 
 <PageTitle>Signup - PetAdoption</PageTitle>
 

@@ -2,14 +2,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Forms;
 using PetAdoption.UI.Components.Models;
+using PetAdoption.UI.Components.Models.APIModels;
 using PetAdoption.UI.Components.Models.DTOs;
 using System.Security.Claims;
 
 namespace PetAdoption.UI.Components.Pages.Auth
 {
-    public record RegisterDto(string Name, string Email, string Password, string PhoneNumber, Gender Gender, Base64ImageFile? ProfilePhoto);
-    public record TokenResponse(string AccessToken, string RefreshToken);
-
     public partial class Signup
     {
         private RegisterViewModel register = new RegisterViewModel();
@@ -45,7 +43,7 @@ namespace PetAdoption.UI.Components.Pages.Auth
                     profileImage = new Base64ImageFile(ProfileFile.Name, base64WithPrefix);
                 }
 
-                AuthToken token = await petAPI.RegisterUserAsync(new RegisterDto(register.Name, register.Email, register.Password, register.PhoneNumber, register.Gender, profileImage));
+                AuthToken token = await petAPI.RegisterUserAsync(new RegisterUser(register.Name, register.Email, register.Password, register.PhoneNumber, register.Gender, profileImage));
 
                 if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {
@@ -55,13 +53,10 @@ namespace PetAdoption.UI.Components.Pages.Auth
 
                 ToastService.Notify(new ToastMessage(ToastType.Success, $"{register.Name} user created successfully"));
 
-             //  var tt = await ((CustomAuthStateProvider)AuthState).GetAuthenticationStateAsync(); // .StartUserSession(user);
-
                 var claims = new List<Claim>{ new Claim(ClaimTypes.Name, "userName")};
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
-              //  await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                // await AuthState.MarkUserAsAuthenticated(token);
+                await AuthState.MarkUserAsAuthenticated(token);
                 _Naivigation.NavigateTo("/", true);
             }
             catch (Exception ex)

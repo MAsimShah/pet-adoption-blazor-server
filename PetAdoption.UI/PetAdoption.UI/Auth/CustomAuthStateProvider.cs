@@ -50,9 +50,9 @@ namespace PetAdoption.UI.Auth
             if (token is null || string.IsNullOrEmpty(token.AccessToken)) return null;
 
             await _cookieStorageService.SetCookieAsync(_TokenKey, token.AccessToken, 1);
-            var user = GetAuthenticationStateAsync();
-            NotifyAuthenticationStateChanged(user);
-            return await user;
+            var state = await GetAuthenticationStateAsync();
+            NotifyAuthenticationStateChanged(Task.FromResult(state));
+            return state;
         }
 
         public async Task<AuthenticationState> CheckUserAsAuthenticated()
