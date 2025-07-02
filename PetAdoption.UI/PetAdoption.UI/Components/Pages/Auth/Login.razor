@@ -1,84 +1,71 @@
-﻿@page "/login"
-@inject HttpClient Http
-@inject ToastService ToastService
-@inject PreloadService PreloadService
-@inject NavigationManager _Naivigation
-@inject CookieStorageService cookieService
-@inject CustomAuthStateProvider AuthState 
+﻿@page "/login"  
+@using PetAdoption.UI.Components.Layout  
+@inject ToastService ToastService  
+@inject PreloadService PreloadService  
+@inject NavigationManager _Naivigation  
+@inject CookieStorageService cookieService  
+@inject CustomAuthStateProvider AuthState  
+@inject IPetAdoptionAPI petAPI  
+@layout EmptyLayout  
 
+<PageTitle>Login - PetAdoption</PageTitle>  
 
-<PageTitle>Login - PetAdoption</PageTitle>
+<style>  
+    :root {  
+        --primary-color: #6c63ff;  
+        --secondary-color: #f5f5f5;  
+        --text-color: #333;  
+    }  
 
-<style>
-    :root {
-        --primary-color: #6c63ff;
-        --secondary-color: #f5f5f5;
-        --text-color: #333;
-    }
+    body {  
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;  
+        height: 100vh !important;  
+        display: flex !important;  
+        align-items: center !important;  
+        justify-content: center !important;  
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;  
+    }  
+</style>  
 
-    body {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
-        height: 100vh !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-    }
-</style>
+<div class="container">  
+    <div class="login-container fadeIn">  
+        <div class="row g-0">  
+            <div class="col-md-6 d-none d-md-block login-image">  
+                <!-- Background image set in CSS -->  
+            </div>  
+            <div class="col-md-6 login-form">  
+                <div class="welcome-text">  
+                    <h2>Welcome Pet Adoption</h2>  
+                    <p>Please sign in to start adopting a pet</p>  
+                </div>  
 
-<div class="container">
-    <AuthorizeView>
-        <Authorized>
-            <div>Hello, @context.User.Identity?.Name!</div>
-        </Authorized>
-        <NotAuthorized>
-            <div>You are not authorized person</div>
-        </NotAuthorized>
-    </AuthorizeView>
+                <EditForm Model="@modal" OnValidSubmit="LoginUser">  
+                    <DataAnnotationsValidator />  
 
-    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" @onclick="AuthUser">
-        <Icon Name="IconName.Save2" class="me-2" />Authorized
-    </Button>
+                    <div class="form-control">  
+                        <label class="form-label"> Email <span class="text-danger">*</span></label>  
+                        <InputText class="form-control" @bind-Value="modal.Email" placeholder="Email" />  
+                        <ValidationMessage For="@(() => modal.Email)" class="text-danger small" />  
+                    </div>  
+                    <div class="form-control">  
+                        <label class="form-label"> Password <span class="text-danger">*</span></label>  
+                        <InputText class="form-control" @bind-Value="modal.Password" placeholder="Password" />  
+                        <ValidationMessage For="@(() => modal.Password)" class="text-danger small" />  
+                    </div>  
+                    <div class="form-control">  
+                        <Button Color="ButtonColor.Secondary">  
+                            <Icon Name="IconName.X" class="me-2" />Cancel  
+                        </Button>  
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">  
+                            <Icon Name="IconName.Save2" class="me-2" />Login  
+                        </Button>  
+                    </div>  
+                </EditForm>  
 
-    <div class="login-container fadeIn">
-        <div class="row g-0">
-            <div class="col-md-6 d-none d-md-block login-image">
-                <!-- Background image set in CSS -->
-            </div>
-            <div class="col-md-6 login-form">
-                <div class="welcome-text">
-                    <h2>Welcome Pet Adoption</h2>
-                    <p>Please sign in to start adopting a pet</p>
-                </div>
-
-                <EditForm Model="@modal" OnValidSubmit="LoginUser">
-                    <DataAnnotationsValidator />
-
-                    <div class="form-control">
-                        <label class="form-label"> Email <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="modal.Email" placeholder="Email" />
-                        <ValidationMessage For="@(() => modal.Email)" class="text-danger small" />
-                    </div>
-                    <div class="form-control">
-                        <label class="form-label"> Password <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="modal.Password" placeholder="Password" />
-                        <ValidationMessage For="@(() => modal.Password)" class="text-danger small" />
-                    </div>
-                    <div class="form-control">
-                        <Button Color="ButtonColor.Secondary">
-                            <Icon Name="IconName.X" class="me-2" />Cancel
-                        </Button>
-                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
-                            <Icon Name="IconName.Save2" class="me-2" />Login
-                        </Button>
-                    </div>
-                </EditForm>
-
-                <div class="signup-link">
-                    <p>Don't have an account? <a href="/signup">Signup</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
+                <div class="signup-link">  
+                    <p>Don't have an account? <a href="/signup">Signup</a></p>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
 </div>
-
