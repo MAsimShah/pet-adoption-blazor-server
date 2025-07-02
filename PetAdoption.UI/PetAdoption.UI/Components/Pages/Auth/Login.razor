@@ -1,7 +1,4 @@
-﻿@page "/login"  
-@using PetAdoption.UI.Components.Layout  
-@inject ToastService ToastService  
-@inject PreloadService PreloadService  
+﻿@page "/login"   
 @inject NavigationManager _Naivigation  
 @inject CookieStorageService cookieService  
 @inject CustomAuthStateProvider AuthState  
@@ -39,10 +36,14 @@
                     <p>Please sign in to start adopting a pet</p>  
                 </div>  
 
-                <EditForm Model="@modal" OnValidSubmit="LoginUser">  
+                <EditForm Model="@model" OnValidSubmit="LoginUser">
                     <DataAnnotationsValidator />  
 
-                    <div class="form-control">  
+                    <MudTextField Required="true"
+                                  Immediate="true" InputType="InputType.Email" Label="Email" Class="mt-3"
+                                  @bind-Value="model.Email" For="@(() => model.Email)" />
+
+                    @* <div class="form-control">  
                         <label class="form-label"> Email <span class="text-danger">*</span></label>  
                         <InputText class="form-control" @bind-Value="modal.Email" placeholder="Email" />  
                         <ValidationMessage For="@(() => modal.Email)" class="text-danger small" />  
@@ -59,7 +60,7 @@
                         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">  
                             <Icon Name="IconName.Save2" class="me-2" />Login  
                         </Button>  
-                    </div>  
+                    </div>   *@
                 </EditForm>  
 
                 <div class="signup-link">  

@@ -1,8 +1,6 @@
 ﻿@page "/signup"
 @using PetAdoption.UI.Components.Layout
 @inject IPetAdoptionAPI petAPI
-@inject ToastService ToastService
-@inject PreloadService PreloadService
 @inject NavigationManager _Naivigation
 @inject LocalStorageService storage
 @inject CustomAuthStateProvider AuthState
@@ -53,7 +51,7 @@
                         <InputText class="form-control" @bind-Value="register.Email" placeholder="Email" />
                         <ValidationMessage For="@(() => register.Email)" class="text-danger small" />
                     </div>
-                    <div class="form-control">
+                    @* <div class="form-control">
                         <label class="form-label"> Password <span class="text-danger">*</span></label>
                         <PasswordInput class="form-control" @bind-Value="register.Password" placeholder="Password" />
                         <ValidationMessage For="@(() => register.Password)" class="text-danger small" />
@@ -62,7 +60,7 @@
                         <label class="form-label"> Confirm Password <span class="text-danger">*</span></label>
                         <PasswordInput class="form-control" @bind-Value="register.ConfirmPassword" placeholder="Confirm Password" />
                         <ValidationMessage For="@(() => register.ConfirmPassword)" class="text-danger small" />
-                    </div>
+                    </div> *@
                     <div class="form-control">
                         <label class="form-label"> Phone # <span class="text-danger">*</span></label>
                         <InputText class="form-control" @bind-Value="register.PhoneNumber" placeholder="Phone Number" />

@@ -1,5 +1,4 @@
-﻿using BlazorBootstrap;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Forms;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.APIModels;
@@ -23,7 +22,7 @@ namespace PetAdoption.UI.Components.Pages.Auth
             HttpResponseMessage? response = null;
             try
             {
-                PreloadService.Show();
+             //   PreloadService.Show();
 
                 Base64ImageFile profileImage = null;
 
@@ -47,11 +46,11 @@ namespace PetAdoption.UI.Components.Pages.Auth
 
                 if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {
-                    ToastService.Notify(new ToastMessage(ToastType.Danger, $"{register.Name} not saved successfully! Please try again"));
+                   // ToastService.Notify(new ToastMessage(ToastType.Danger, $"{register.Name} not saved successfully! Please try again"));
                     return;
                 }
 
-                ToastService.Notify(new ToastMessage(ToastType.Success, $"{register.Name} user created successfully"));
+              //  ToastService.Notify(new ToastMessage(ToastType.Success, $"{register.Name} user created successfully"));
 
                 var claims = new List<Claim>{ new Claim(ClaimTypes.Name, "userName")};
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -61,12 +60,12 @@ namespace PetAdoption.UI.Components.Pages.Auth
             }
             catch (Exception ex)
             {
-                PreloadService.Hide();
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+              //  PreloadService.Hide();
+              //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
             }
             finally
             {
-                PreloadService.Hide();
+               // PreloadService.Hide();
             }
         }
     }
