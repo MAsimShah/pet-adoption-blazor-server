@@ -7,7 +7,13 @@
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<MudMenu Label="Open menu">
+    <MudMenuItem Label="Item 1" />
+    <MudMenuItem Label="Item 2" />
+    <MudMenuItem Label="Item 3" />
+</MudMenu>
+
+@* <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
@@ -43,7 +49,7 @@
             </NotAuthorized>
         </AuthorizeView>
     </nav>
-</div>
+</div> *@
 
 @code {
     private async Task Logout()

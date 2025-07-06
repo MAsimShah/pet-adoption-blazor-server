@@ -1,14 +1,12 @@
 ﻿@page "/pets"
 @inject HttpClient Http
-@inject ToastService ToastService
-@inject PreloadService PreloadService
 @inject IConfiguration Configuration
 @attribute [Authorize]
 
 <PageTitle>Pets - PetAdoption</PageTitle>
 
 <!-- Enhanced Modal -->
-<Modal @ref="modal" Title="Add New Pet" IsScrollable="true" Size="ModalSize.ExtraLarge" IsBackdropDismissible="false">
+<Modal Title="Add New Pet" IsScrollable="true" Size="ModalSize.ExtraLarge" IsBackdropDismissible="false">
     <BodyTemplate>
         <EditForm Model="@petViewModel" OnValidSubmit="SavePet" id="petForm">
             <DataAnnotationsValidator />
@@ -90,8 +88,8 @@
                                     <label for="description" class="form-label fw-bold">
                                         <Icon Name="IconName.FileText" class="me-1 text-success" />Description
                                     </label>
-                                    <TextAreaInput id="description" class="form-control" rows="4" @bind-Value="petViewModel.Description"
-                                                   placeholder="Tell us about this pet's personality, habits, and special needs..." />
+                                    @* <TextAreaInput id="description" class="form-control" rows="4" @bind-Value="petViewModel.Description"
+                                                   placeholder="Tell us about this pet's personality, habits, and special needs..." /> *@
                                 </div>
 
                                 <!-- Behavioral Traits -->
@@ -100,17 +98,17 @@
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <div class="form-check form-switch form-check-lg">
-                                                <CheckboxInput id="chkMicrochipped" Label="Microchipped" @bind-Value="petViewModel.Microchipped" />
+                                                @* <CheckboxInput id="chkMicrochipped" Label="Microchipped" @bind-Value="petViewModel.Microchipped" /> *@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-check form-switch">
-                                                <CheckboxInput id="goodWithKids" Label="Good with Kids" class="form-check-input" @bind-Value="petViewModel.GoodWithKids" />
+                                                @* <CheckboxInput id="goodWithKids" Label="Good with Kids" class="form-check-input" @bind-Value="petViewModel.GoodWithKids" /> *@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-check form-switch">
-                                                <CheckboxInput id="goodWithOtherPets" Label="Good with Other Pet" class="form-check-input" @bind-Value="petViewModel.GoodWithOtherPets" />
+                                                @* <CheckboxInput id="goodWithOtherPets" Label="Good with Other Pet" class="form-check-input" @bind-Value="petViewModel.GoodWithOtherPets" /> *@
                                             </div>
                                         </div>
                                     </div>
@@ -145,7 +143,7 @@
                                             <label for="adoptableSince" class="form-label fw-bold">
                                                 <Icon Name="IconName.Calendar" class="me-1 text-info" />Adoptable Since
                                             </label>
-                                            <DateInput id="adoptableSince" class="form-control" @bind-Value="petViewModel.AdoptableSince" />
+                                            @* <DateInput id="adoptableSince" class="form-control" @bind-Value="petViewModel.AdoptableSince" /> *@
                                         </div>
                                     </div>
                                 </div>
@@ -291,7 +289,7 @@
                         <ChildContent>
                             <div class="d-flex align-items-center py-2">
                                 <div class="me-3">
-                                    @if (context.PetPhotos != null && context.PetPhotos.Any())
+                                    @* @if (context.PetPhotos != null && context.PetPhotos.Any())
                                     {
                                         <img src="@($"{Configuration["BlazorApiUrl"]}{context.PetPhotos.First().PhotoUrl}")" alt="@context.Name"
                                              class="rounded-circle shadow-sm"
@@ -303,12 +301,12 @@
                                              style="width: 50px; height: 50px;">
                                             <Icon Name="IconName.Camera" class="text-muted" />
                                         </div>
-                                    }
+                                    } *@
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-bold text-primary">@context.Name</h6>
+                                    @* <h6 class="mb-1 fw-bold text-primary">@context.Name</h6> *@
                                     <small class="text-muted">
-                                        <Icon Name="IconName.Briefcase" class="me-1" />@context.Breed
+                                        @* <Icon Name="IconName.Briefcase" class="me-1" />@context.Breed *@
                                     </small>
                                 </div>
                             </div>
@@ -327,18 +325,18 @@
                                     <small class="text-muted">Age:</small>
                                     <span class="badge bg-info ms-1">
                                         <Icon Name="IconName.Clock" class="me-1" Size="IconSize.x5" />
-                                        @context.Age years
+                                        @* @context.Age years *@
                                     </span>
                                 </div>
                                 <div class="mb-1">
                                     <small class="text-muted">Species:</small>
-                                    <span class="badge bg-secondary ms-1">@context.Species</span>
+                                    @* <span class="badge bg-secondary ms-1">@context.Species</span> *@
                                 </div>
                                 <div>
                                     <small class="text-muted">Gender:</small>
-                                    <span class="badge @(context.Gender == AnimalGender.Male ? "bg-primary" : "bg-pink") ms-1">
-                                        @context.Gender
-                                    </span>
+                                    @* <span class="badge @(context.Gender == AnimalGender.Male ? "bg-primary" : "bg-pink") ms-1">
+                                        @context.Gender 
+                                    </span> *@
                                 </div>
                             </div>
                         </ChildContent>
@@ -352,12 +350,12 @@
                         </HeaderContent>
                         <ChildContent>
                             <div class="py-2">
-                                <span class="badge @GetHealthStatusBadgeClass(context.HealthStatus) mb-2">
+                                @* <span class="badge @GetHealthStatusBadgeClass(context.HealthStatus) mb-2">
                                     <Icon Name="IconName.Heart" class="me-1" Size="IconSize.x5" />
                                     @context.HealthStatus
-                                </span>
+                                </span> *@
                                 <div class="small">
-                                    @if (context.Microchipped)
+                                    @* @if (context.Microchipped)
                                     {
                                         <span class="badge bg-success me-1">
                                             <Icon Name="IconName.Shield" class="me-1" Size="IconSize.x5" />
@@ -377,7 +375,7 @@
                                             <Icon Name="IconName.Heart" class="me-1" Size="IconSize.x5" />
                                             Pet-Friendly
                                         </span>
-                                    }
+                                    } *@
                                 </div>
                             </div>
                         </ChildContent>
@@ -393,20 +391,20 @@
                             <div class="py-2">
                                 <div class="mb-2">
                                     <h6 class="mb-0 text-success fw-bold">
-                                        $ @context.AdoptionFee?.ToString("N2")
+                                        @* $ @context.AdoptionFee?.ToString("N2") *@
                                     </h6>
                                     <small class="text-muted">Adoption Fee</small>
                                 </div>
                                 <div class="mb-1">
                                     <small class="text-muted">
                                         <Icon Name="IconName.Calendar" class="me-1" />
-                                        Available since: @context.AdoptableSince?.ToString("MMM dd, yyyy")
+                                        @* Available since: @context.AdoptableSince?.ToString("MMM dd, yyyy") *@
                                     </small>
                                 </div>
                                 <div>
                                     <small class="text-muted">
                                         <Icon Name="IconName.PinMap" class="me-1" />
-                                        @context.Location
+                                        @* @context.Location *@
                                     </small>
                                 </div>
                             </div>
@@ -421,7 +419,7 @@
                         </HeaderContent>
                         <ChildContent>
                             <div class="d-flex gap-1 py-2">
-                                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ViewPet(context)">
+                                @* <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ViewPet(context)">
                                     <Icon Name="IconName.Eye" Size="IconSize.x5" />
                                 </Button>
                                 <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="() => EditPet(context.Id)">
@@ -429,7 +427,7 @@
                                 </Button>
                                 <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => DeletePet(context.Id)">
                                     <Icon Name="IconName.Trash2" Size="IconSize.x5" />
-                                </Button>
+                                </Button> *@
                             </div>
                         </ChildContent>
                     </GridColumn>

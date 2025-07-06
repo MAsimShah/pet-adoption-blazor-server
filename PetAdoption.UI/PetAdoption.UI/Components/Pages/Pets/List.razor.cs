@@ -1,5 +1,4 @@
-﻿using BlazorBootstrap;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Forms;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.DTOs;
 using System.Net.Http.Headers;
@@ -20,7 +19,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
         private List<PetViewModel> petsList = new();
         private PetViewModel petViewModel = new PetViewModel();
         private List<IBrowserFile> loadedFiles = [];
-        private Modal modal = new Modal();
+       // private Modal modal = new Modal();
         private bool isLoading = false;
         public IBrowserFile[] UploadedImages { get; set; }
 
@@ -34,19 +33,19 @@ namespace PetAdoption.UI.Components.Pages.Pets
         {
             petViewModel = new PetViewModel();
             EditContext editContext = new EditContext(petViewModel);
-            await modal.ShowAsync();
+        //    await modal.ShowAsync();
         }
 
         private async Task OnHideModal()
         {
-            await modal.HideAsync();
+           // await modal.HideAsync();
         }
 
         private async Task LoadFiles(InputFileChangeEventArgs e)
         {
             try
             {
-                PreloadService.Show();
+               // PreloadService.Show();
                 loadedFiles.Clear();
 
                 var files = e.GetMultipleFiles();
@@ -54,12 +53,12 @@ namespace PetAdoption.UI.Components.Pages.Pets
             }
             catch
             {
-                PreloadService.Hide();
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+               // PreloadService.Hide();
+              //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
             }
             finally
             {
-                PreloadService.Hide();
+              //  PreloadService.Hide();
             }
         }
 
@@ -68,7 +67,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
             HttpResponseMessage? response = null;
             try
             {
-                PreloadService.Show();
+              //  PreloadService.Show();
                 response = await Http.DeleteAsync($"/api/Pets/DeletePhoto/{photoId}");
 
                 // grid refresh with db calling
@@ -83,14 +82,14 @@ namespace PetAdoption.UI.Components.Pages.Pets
             }
             catch
             {
-                PreloadService.Hide();
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+              //  PreloadService.Hide();
+              //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
             }
             finally
             {
-                PreloadService.Hide();
-                if (response is null || !response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
-                else ToastService.Notify(new ToastMessage(ToastType.Success, IconName.Bug, "Success", $"Deleted Successfully"));
+               // PreloadService.Hide();
+              //  if (response is null || !response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+              //  else ToastService.Notify(new ToastMessage(ToastType.Success, IconName.Bug, "Success", $"Deleted Successfully"));
             }
         }
 
@@ -99,7 +98,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
             HttpResponseMessage? response = null;
             try
             {
-                PreloadService.Show();
+              //  PreloadService.Show();
 
                 if (petViewModel.Id > 0)
                      response = await Http.PutAsJsonAsync("/api/Pets/Update", petViewModel);
@@ -108,7 +107,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    ToastService.Notify(new ToastMessage(ToastType.Danger, $"{petViewModel.Name} not saved successfully! Please try again"));
+                  //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"{petViewModel.Name} not saved successfully! Please try again"));
                     return;
                 }
 
@@ -140,20 +139,20 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
                     var filesResponse = await Http.PostAsJsonAsync("/api/Pets/Upload-pet-files", payload);
 
-                    if (!filesResponse.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Files not saved successfully!"));
+                    //if (!filesResponse.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Files not saved successfully!"));
 
-                    ToastService.Notify(new ToastMessage(ToastType.Success, $"{petViewModel.Name} is saved successfully"));
+                   // ToastService.Notify(new ToastMessage(ToastType.Success, $"{petViewModel.Name} is saved successfully"));
                 }
             }
             catch (Exception ex)
             {
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
-                PreloadService.Hide();
+              //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+              //  PreloadService.Hide();
             }
             finally
             {
-                PreloadService.Hide();
-                await modal.HideAsync();
+               // PreloadService.Hide();
+              //  await modal.HideAsync();
                 await RefreshGrid();
             }
         }
@@ -181,24 +180,24 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
             try
             {
-                PreloadService.Show();
+               // PreloadService.Show();
                 response = await Http.GetAsync($"/api/Pets/Get/{petId}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     petViewModel = await response.Content.ReadFromJsonAsync<PetViewModel>();
                     EditContext editContext = new EditContext(petViewModel);
-                    await modal.ShowAsync();
+                 //   await modal.ShowAsync();
                 }
 
             }
             catch
             {
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+               // ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
             }
             finally
             {
-                PreloadService.Hide();
+              //  PreloadService.Hide();
             }
         }
 
@@ -207,7 +206,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
             HttpResponseMessage? response = null;
             try
             {
-                PreloadService.Show();
+               // PreloadService.Show();
                 response = await Http.DeleteAsync($"/api/Pets/Delete/{petId}");
 
                 // grid refresh with db calling
@@ -222,36 +221,36 @@ namespace PetAdoption.UI.Components.Pages.Pets
             }
             catch
             {
-                PreloadService.Hide();
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+             //   PreloadService.Hide();
+             //   ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
             }
             finally
             {
-                PreloadService.Hide();
-                if (response is null || !response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
-                else ToastService.Notify(new ToastMessage(ToastType.Success, IconName.Bug, "Success", $"Deleted Successfully"));
+               // PreloadService.Hide();
+               // if (response is null || !response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+              //  else ToastService.Notify(new ToastMessage(ToastType.Success, IconName.Bug, "Success", $"Deleted Successfully"));
             }
         }
 
         private async Task RefreshGrid()
         {
-            PreloadService.Show();
+          //  PreloadService.Show();
             try
             {
                 var response = await Http.GetAsync("/api/Pets/get-list");
-                if (!response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+               // if (!response.IsSuccessStatusCode) ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
 
                 petsList = await response.Content.ReadFromJsonAsync<List<PetViewModel>>();
                 isLoading = true;
             }
             catch
             {
-                PreloadService.Hide();
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
+               // PreloadService.Hide();
+              //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong"));
             }
             finally
             {
-                PreloadService.Hide();
+             //   PreloadService.Hide();
             }
         }
     }

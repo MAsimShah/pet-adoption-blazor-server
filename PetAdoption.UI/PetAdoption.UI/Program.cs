@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor.Services;
 using PetAdoption.UI.Auth;
 using PetAdoption.UI.Components;
 using PetAdoption.UI.Interfaces;
@@ -10,10 +11,11 @@ using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddBlazorBootstrap();
+// Add MudBlazor services
+builder.Services.AddMudServices();
+
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents().AddCircuitOptions(e => e.DetailedErrors = true);
 
 builder.Services.AddRefitClient<IPetAdoptionAPI>().ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7039"));
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7039") });
@@ -30,6 +32,8 @@ builder.Services.AddScoped<CookieStorageService>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<CustomAuthStateProvider>());
+
+builder.Services.AddSingleton<LoaderService>();
 
 var app = builder.Build();
 

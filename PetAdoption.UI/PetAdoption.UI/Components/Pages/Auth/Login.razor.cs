@@ -1,4 +1,4 @@
-﻿using BlazorBootstrap;
+﻿using MudBlazor;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.DTOs;
 
@@ -6,35 +6,36 @@ namespace PetAdoption.UI.Components.Pages.Auth
 {
     public partial class Login
     {
-        private LoginViewModel modal = new LoginViewModel();
+        private LoginViewModel model = new LoginViewModel();
 
         private async Task LoginUser()
         {
             try
             {
-                PreloadService.Show();
+                Loader.Show();
 
-                AuthToken response = await petAPI.LoginUserAsync(modal);
+                // auth user
+                AuthToken response = await petAPI.LoginUserAsync(model);
 
                 if (response is null || string.IsNullOrEmpty(response.AccessToken))
                 {
-                    ToastService.Notify(new ToastMessage(ToastType.Danger, $"{modal.Email} not login successfully! Please try again"));
+                    Snackbar.Add($"{model.Email} not login successfully! Please try again", Severity.Error);
                     return;
                 }
 
-                ToastService.Notify(new ToastMessage(ToastType.Success, $"{modal.Email} user not login successfully"));
+                Snackbar.Add($"{model.Email} login successfully", Severity.Success);
                 await AuthState.MarkUserAsAuthenticated(response);
 
                 _Naivigation.NavigateTo("/", true);
             }
             catch (Exception ex)
             {
-                PreloadService.Hide();
-                ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+                Loader.Hide();
+                Snackbar.Add("Something went wrong!", Severity.Success);
             }
             finally
             {
-                PreloadService.Hide();
+                Loader.Hide();
             }
         }
     }
