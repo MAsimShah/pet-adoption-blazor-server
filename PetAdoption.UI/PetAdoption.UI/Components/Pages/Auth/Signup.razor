@@ -1,90 +1,43 @@
 ﻿@page "/signup"
-@using PetAdoption.UI.Components.Layout
 @inject IPetAdoptionAPI petAPI
 @inject NavigationManager _Naivigation
 @inject LocalStorageService storage
 @inject CustomAuthStateProvider AuthState
+@inject ISnackbar Snackbar
 @layout EmptyLayout
 
 <PageTitle>Signup - PetAdoption</PageTitle>
+s
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-12 mx-auto">
+    <MudPaper Elevation="4" Class="pa-6">
+        <MudGrid GutterSize="3" AlignItems="Center" Justify="Justify.Center">
+            <!-- Left column: Image -->
+            <MudItem xs="4" sm="5" class="d-flex justify-center" Style="max-width: 300px; max-height: 300px; overflow: hidden;">
+                <MudImage Src="@previewImageUrl" ObjectFit="ObjectFit.Cover" Alt="Mony the dog" Elevation="25" Class="rounded-lg" @onclick="AskImageUpload" Style="max-width: 100%; height: auto; max-height: 300px;" />
+                <MudFileUpload T="IBrowserFile" @ref="@_fileElement" OnFilesChanged="UploadProfilePhoto" Class="invisible">
+                </MudFileUpload>
+            </MudItem>
 
-<style>
-    :root {
-        --primary-color: #6c63ff;
-        --secondary-color: #f5f5f5;
-        --text-color: #333;
-    }
+            <!-- Right column: Form -->
+            <MudItem xs="8" sm="7">
+                <MudText Typo="Typo.h5" Class="text-center mb-4r text-al" Style="text-align: center">Login</MudText>
 
-    body {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
-        height: 100vh !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-    }
-</style>
-
-<Toasts class="p-3" AutoHide="true" Placement="ToastsPlacement.TopRight" />
-<div class="container">
-    <div class="login-container fadeIn">
-        <div class="row g-0">
-            <div class="col-md-6 d-none d-md-block login-image">
-                <!-- Background image set in CSS -->
-            </div>
-            <div class="col-md-6 login-form">
-                <div class="welcome-text">
-                    <h2>Welcome Pet Adoption</h2>
-                    <p>Please sign up to start adopting a pet</p>
-                </div>
-
-                <EditForm Model="@register" OnValidSubmit="RegisterUser">
+                <EditForm Model="@model" OnValidSubmit="RegisterUser">
                     <DataAnnotationsValidator />
 
-                    <div class="form-control">
-                        <label class="form-label"> Name <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="register.Name" placeholder="Name" />
-                        <ValidationMessage For="@(() => register.Name)" class="text-danger small" />
-                    </div>
-                    <div class="form-control">
-                        <label class="form-label"> Email <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="register.Email" placeholder="Email" />
-                        <ValidationMessage For="@(() => register.Email)" class="text-danger small" />
-                    </div>
-                    @* <div class="form-control">
-                        <label class="form-label"> Password <span class="text-danger">*</span></label>
-                        <PasswordInput class="form-control" @bind-Value="register.Password" placeholder="Password" />
-                        <ValidationMessage For="@(() => register.Password)" class="text-danger small" />
-                    </div>
-                    <div class="form-control">
-                        <label class="form-label"> Confirm Password <span class="text-danger">*</span></label>
-                        <PasswordInput class="form-control" @bind-Value="register.ConfirmPassword" placeholder="Confirm Password" />
-                        <ValidationMessage For="@(() => register.ConfirmPassword)" class="text-danger small" />
-                    </div> *@
-                    <div class="form-control">
-                        <label class="form-label"> Phone # <span class="text-danger">*</span></label>
-                        <InputText class="form-control" @bind-Value="register.PhoneNumber" placeholder="Phone Number" />
-                        <ValidationMessage For="@(() => register.PhoneNumber)" class="text-danger small" />
-                    </div>
-                    <div class="form-control">
-                        <label class="form-label"> Phone # <span class="text-danger">*</span></label>
-                        <InputFile id="photos" class="form-control mb-3" multiple OnChange="UploadProfilePhoto" accept="image/*" />
-                        <ValidationMessage For="@(() => register.PhoneNumber)" class="text-danger small" />
-                    </div>
-                    <div class="form-control">
-                        <Button Color="ButtonColor.Secondary">
-                            <Icon Name="IconName.X" class="me-2" /> Cancel
-                        </Button>
-                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
-                            <Icon Name="IconName.Save2" class="me-2" /> Register
-                        </Button>
-                    </div>
+                    <MudTextField Label="Name" InputType="InputType.Text" @bind-Value="model.Name" Variant="Variant.Filled" FullWidth="true" For="@(() => model.Name)" />
+                    <MudTextField Label="Email" InputType="InputType.Email" @bind-Value="model.Email" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.Email)" />
+                    <MudTextField Label="Password" InputType="InputType.Password" @bind-Value="model.Password" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.Password)" />
+                    <MudTextField Label="Confirm Password" InputType="InputType.Password" @bind-Value="model.ConfirmPassword" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.ConfirmPassword)" />
+                    <MudTextField Label="Phone #" InputType="InputType.Telephone" @bind-Value="model.PhoneNumber" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.PhoneNumber)" />
+
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6">Login</MudButton>
                 </EditForm>
 
-                <div class="signup-link">
-                    <p>Do you have an account? <a href="/login">Login</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                <MudText Class="text-center mt-4">
+                    Don't have an account? <MudLink Href="/signup">Sign Up</MudLink>
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>

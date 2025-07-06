@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.APIModels;
 using PetAdoption.UI.Components.Models.DTOs;
@@ -9,12 +10,30 @@ namespace PetAdoption.UI.Components.Pages.Auth
 {
     public partial class Signup
     {
-        private RegisterViewModel register = new RegisterViewModel();
-        public IBrowserFile ProfileFile { get; set; } = null;
+        private string? previewImageUrl;
+        private MudFileUpload<IBrowserFile>? _fileElement;
 
-        private void UploadProfilePhoto(InputFileChangeEventArgs e)
+        private RegisterViewModel model = new RegisterViewModel();
+       // public IBrowserFile ProfileFile { get; set; } = null;
+
+
+        private async Task AskImageUpload()
         {
-            ProfileFile = e.File;
+            await _fileElement?.OpenFilePickerAsync();
+        }
+        private async Task UploadProfilePhoto(InputFileChangeEventArgs e)
+        {
+            var profileFile = e.File;
+
+            if (profileFile != null)
+            {
+                var resizedImageFile = await profileFile.RequestImageFileAsync("image/png", 300, 300);
+                using var stream = resizedImageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5); // 5 MB max
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                previewImageUrl = $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+            }
         }
 
         private async Task RegisterUser()
@@ -24,25 +43,25 @@ namespace PetAdoption.UI.Components.Pages.Auth
             {
              //   PreloadService.Show();
 
-                Base64ImageFile profileImage = null;
+               // Base64ImageFile profileImage = null;
 
-                if (ProfileFile != null)
-                {
-                    var fileStream = ProfileFile.OpenReadStream(10 * 1024 * 1024); // max 10MB
-                    var streamContent = new StreamContent(fileStream);
+                //if (ProfileFile != null)
+                //{
+                //    var fileStream = ProfileFile.OpenReadStream(10 * 1024 * 1024); // max 10MB
+                //    var streamContent = new StreamContent(fileStream);
 
-                    using var ms = new MemoryStream();
-                    await fileStream.CopyToAsync(ms);
-                    var bytes = ms.ToArray();
+                //    using var ms = new MemoryStream();
+                //    await fileStream.CopyToAsync(ms);
+                //    var bytes = ms.ToArray();
 
-                    var base64 = Convert.ToBase64String(bytes);
+                //    var base64 = Convert.ToBase64String(bytes);
 
-                    var base64WithPrefix = $"data:{ProfileFile.ContentType};base64,{base64}";
+                //    var base64WithPrefix = $"data:{ProfileFile.ContentType};base64,{base64}";
 
-                    profileImage = new Base64ImageFile(ProfileFile.Name, base64WithPrefix);
-                }
+                //    profileImage = new Base64ImageFile(ProfileFile.Name, base64WithPrefix);
+                //}
 
-                AuthToken token = await petAPI.RegisterUserAsync(new RegisterUser(register.Name, register.Email, register.Password, register.PhoneNumber, register.Gender, profileImage));
+                AuthToken token = await petAPI.RegisterUserAsync(new RegisterUser(model.Name, model.Email, model.Password, model.PhoneNumber, model.Gender, previewImageUrl));
 
                 if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {

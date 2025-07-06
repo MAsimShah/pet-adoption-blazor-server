@@ -1,15 +1,24 @@
 ﻿@inherits LayoutComponentBase
+@inject LoaderService Loader
 
 <MudThemeProvider />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+
+
+@if (showLoader)
+{
+    <div class="loader-overlay">
+
+        <MudOverlay Visible="showLoader" DarkBackground="true" Absolute="true">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+        </MudOverlay>
+    </div>
+}
+
 <MudLayout>
     <MudMainContent Class="pt-16 pa-4">
         @Body
     </MudMainContent>
 </MudLayout>
-
-@code {
-
-}

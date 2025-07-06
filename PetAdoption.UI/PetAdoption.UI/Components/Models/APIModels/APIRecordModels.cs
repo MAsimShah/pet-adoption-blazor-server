@@ -2,7 +2,7 @@
 
 namespace PetAdoption.UI.Components.Models.APIModels
 {
-    public record RegisterUser(string Name, string Email, string Password, string PhoneNumber, Gender Gender, Base64ImageFile? ProfilePhoto);
+    public record RegisterUser(string Name, string Email, string Password, string PhoneNumber, Gender Gender, string? ProfilePhoto);
 
     public record TokenResponse(string AccessToken, string RefreshToken);
 }

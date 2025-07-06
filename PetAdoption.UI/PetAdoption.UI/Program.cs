@@ -33,6 +33,8 @@ builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<CustomAuthStateProvider>());
 
+builder.Services.AddSingleton<LoaderService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
