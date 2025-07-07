@@ -38,10 +38,9 @@ namespace PetAdoption.UI.Components.Pages.Auth
 
         private async Task RegisterUser()
         {
-            HttpResponseMessage? response = null;
             try
             {
-             //   PreloadService.Show();
+                Loader.Show();
 
                // Base64ImageFile profileImage = null;
 
@@ -65,11 +64,11 @@ namespace PetAdoption.UI.Components.Pages.Auth
 
                 if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {
-                   // ToastService.Notify(new ToastMessage(ToastType.Danger, $"{register.Name} not saved successfully! Please try again"));
+                    Snackbar.Add($"{model.Email} not saved successfully! Please try again", Severity.Error);
                     return;
                 }
 
-              //  ToastService.Notify(new ToastMessage(ToastType.Success, $"{register.Name} user created successfully"));
+                Snackbar.Add($"{model.Email} user created successfully", Severity.Success);
 
                 var claims = new List<Claim>{ new Claim(ClaimTypes.Name, "userName")};
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -79,12 +78,12 @@ namespace PetAdoption.UI.Components.Pages.Auth
             }
             catch (Exception ex)
             {
-              //  PreloadService.Hide();
-              //  ToastService.Notify(new ToastMessage(ToastType.Danger, $"Something went wrong!"));
+                  Loader.Hide();
+                Snackbar.Add("Something went wrong!", Severity.Error);
             }
             finally
             {
-               // PreloadService.Hide();
+                 Loader.Hide();
             }
         }
     }
