@@ -12,5 +12,8 @@ namespace PetAdoption.UI.Interfaces
 
         [Post("/api/Auth/Login")]
         Task<AuthToken> LoginUserAsync([Body] LoginViewModel model);
+
+        [Post("/api/Auth/RefreshToken")]
+        Task<AuthToken> RefreshTokenAsync([Body] string token);
     }
 }

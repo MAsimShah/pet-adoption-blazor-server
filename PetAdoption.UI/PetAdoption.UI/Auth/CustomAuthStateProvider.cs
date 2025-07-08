@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using PetAdoption.UI.Components.Models.DTOs;
+using PetAdoption.UI.Interfaces;
 using PetAdoption.UI.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
@@ -10,14 +11,17 @@ namespace PetAdoption.UI.Auth
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly string _TokenKey = "authToken";
+        private readonly string _RefreshTokenKey = "refreshToken";
         private readonly HttpClient _httpClient;
         private readonly CookieStorageService _cookieStorageService;
         private readonly JwtSecurityTokenHandler _tokenHandler = new();
+        private readonly IPetAdoptionAPI _petApi;
 
-        public CustomAuthStateProvider(HttpClient httpClient, CookieStorageService cookieStorageService)
+        public CustomAuthStateProvider(HttpClient httpClient, CookieStorageService cookieStorageService, IPetAdoptionAPI petApi)
         {
             _httpClient = httpClient;
             _cookieStorageService = cookieStorageService;
+            _petApi = petApi;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -34,7 +38,24 @@ namespace PetAdoption.UI.Auth
                 // Optionally validate expiration, audience, issuer, signature, etc.
 
                 if (jwt.ValidTo < DateTime.UtcNow)
-                    return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                {
+                    string refreshToken = await _cookieStorageService.GetCookieAsync(_RefreshTokenKey);
+
+                    if (!string.IsNullOrEmpty(refreshToken))
+                    {
+                       var tokenResponse = await _petApi.RefreshTokenAsync(refreshToken);
+
+                        if (tokenResponse != null)
+                        {
+                            await MarkUserAsAuthenticated(tokenResponse);
+                            jwt = handler.ReadJwtToken(tokenResponse.AccessToken);
+                        }
+                    }
+                    else
+                    {
+                        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                    }
+                }
 
                 var identity = new ClaimsIdentity(jwt.Claims, "jwt");
                 var user = new ClaimsPrincipal(identity);
@@ -50,6 +71,7 @@ namespace PetAdoption.UI.Auth
             if (token is null || string.IsNullOrEmpty(token.AccessToken)) return null;
 
             await _cookieStorageService.SetCookieAsync(_TokenKey, token.AccessToken, 1);
+            await _cookieStorageService.SetCookieAsync(_RefreshTokenKey, token.RefreshToken, 2);
             var state = await GetAuthenticationStateAsync();
             NotifyAuthenticationStateChanged(Task.FromResult(state));
             return state;
