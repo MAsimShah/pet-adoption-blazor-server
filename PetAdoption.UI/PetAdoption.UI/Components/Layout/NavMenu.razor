@@ -1,57 +1,61 @@
 ﻿@inject CustomAuthStateProvider AuthState
 @inject NavigationManager _Naivigation
+@inject IConfiguration Configuration
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Pet Adoption</a>
-    </div>
-</div>
+<!-- Inline horizontal navigation -->
+<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+    <MudNavLink Href="/">Home</MudNavLink>
+    <MudNavLink Href="/pets">Pets</MudNavLink>
+    <MudNavLink Href="/requests">Adoptions</MudNavLink>
 
-<MudMenu Label="Open menu">
-    <MudMenuItem Label="Item 1" />
-    <MudMenuItem Label="Item 2" />
-    <MudMenuItem Label="Item 3" />
-</MudMenu>
-
-@* <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="pets" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Pets
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="requests" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Pet Adoptions
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3" @onclick="Logout">
-                    <NavLink class="nav-link" href="logout" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Logout
-                    </NavLink>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="login" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div> *@
+    <AuthorizeView>
+        <Authorized>
+            <MudMenu>
+                <ActivatorContent>
+                    <MudAvatar>
+                        <MudImage Src="@ProfileImage" />
+                    </MudAvatar>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Label="Profile" />
+                    <MudMenuItem Label="Logout" OnClick="Logout" />
+                </ChildContent>
+            </MudMenu>
+        </Authorized>
+        <NotAuthorized>
+            <MudButton Variant="Variant.Filled" Size="Size.Medium" Color="Color.Tertiary" OnClick="LoginPage">Login</MudButton>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudStack>
 
 @code {
+    private string ProfileImage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var imageUrl = user.FindFirst("ProfileImage")?.Value;
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                ProfileImage = Configuration["DefaultProfileImage"];
+            }
+            else
+            {
+                ProfileImage = Configuration["BlazorApiUrl"] + imageUrl;
+            }
+        }
+    }
+
+    private void LoginPage()
+    {
+        _Naivigation.NavigateTo("/", true);
+    }
+
     private async Task Logout()
     {
         await AuthState.MarkUserAsLoggedOut();
