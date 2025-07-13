@@ -11,6 +11,7 @@ namespace PetAdoption.UI.Components.Pages.Auth
     public partial class Signup
     {
         private string? previewImageUrl;
+        private Base64ImageFile? profileIage;
         private MudFileUpload<IBrowserFile>? _fileElement;
 
         private RegisterViewModel model = new RegisterViewModel();
@@ -33,6 +34,7 @@ namespace PetAdoption.UI.Components.Pages.Auth
                 await stream.CopyToAsync(memoryStream);
                 var bytes = memoryStream.ToArray();
                 previewImageUrl = $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+                profileIage = new Base64ImageFile(e.File.Name, previewImageUrl);
             }
         }
 
@@ -42,25 +44,7 @@ namespace PetAdoption.UI.Components.Pages.Auth
             {
                 Loader.Show();
 
-               // Base64ImageFile profileImage = null;
-
-                //if (ProfileFile != null)
-                //{
-                //    var fileStream = ProfileFile.OpenReadStream(10 * 1024 * 1024); // max 10MB
-                //    var streamContent = new StreamContent(fileStream);
-
-                //    using var ms = new MemoryStream();
-                //    await fileStream.CopyToAsync(ms);
-                //    var bytes = ms.ToArray();
-
-                //    var base64 = Convert.ToBase64String(bytes);
-
-                //    var base64WithPrefix = $"data:{ProfileFile.ContentType};base64,{base64}";
-
-                //    profileImage = new Base64ImageFile(ProfileFile.Name, base64WithPrefix);
-                //}
-
-                AuthToken token = await petAPI.RegisterUserAsync(new RegisterUser(model.Name, model.Email, model.Password, model.PhoneNumber, model.Gender, previewImageUrl));
+                AuthToken token = await petAPI.RegisterUserAsync(new RegisterUser(model.Name, model.Email, model.Password, model.PhoneNumber, model.Gender, profileIage));
 
                 if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {

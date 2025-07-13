@@ -1,4 +1,8 @@
-﻿.form-check-lg .form-check-input {
+﻿.my-custom-class {
+    backdrop-filter: blur(10px);
+}
+
+/*.form-check-lg .form-check-input {
     transform: scale(1.2);
 }
 
@@ -38,12 +42,12 @@
     .pet-dp-preview {
         height: 200px !important;
     }
-}
+}*/
 
 /* Grid design */
 
 /* Enhanced Table Styles */
-.table th {
+/*.table th {
     background-color: #f8f9fa;
     border-top: none;
     font-weight: 600;
@@ -60,30 +64,30 @@
     background-color: #f0f8ff;
     transform: translateY(-1px);
     transition: all 0.2s ease;
-}
+}*/
 
 /* Badge Customizations */
-.badge {
+/*.badge {
     font-size: 0.75rem;
     font-weight: 500;
 }
 
 .bg-pink {
     background-color: #e91e63 !important;
-}
+}*/
 
 /* Card Enhancements */
-.card {
+/*.card {
     border: none;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 
 .card-header {
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-}
+}*/
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {
     .d-flex.gap-2 {
         flex-direction: column;
         gap: 0.5rem !important;
@@ -96,17 +100,17 @@
     .card-footer .col-md-3 {
         margin-bottom: 0.5rem;
     }
-}
+}*/
 
 /* Loading and Empty States */
-.table-loading {
+/*.table-loading {
     text-align: center;
     padding: 3rem;
     color: #6c757d;
-}
+}*/
 
 /* Action Button Hover Effects */
-.btn-sm:hover {
+/*.btn-sm:hover {
     transform: scale(1.05);
     transition: transform 0.1s ease;
-}
+}*/

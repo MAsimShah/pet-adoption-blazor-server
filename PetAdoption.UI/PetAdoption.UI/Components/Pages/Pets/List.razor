@@ -1,225 +1,22 @@
 ﻿@page "/pets"
 @inject HttpClient Http
 @inject IConfiguration Configuration
+@inject IDialogService DialogService
 @attribute [Authorize]
 
 <PageTitle>Pets - PetAdoption</PageTitle>
 
+<MudButton @onclick="AddPetAsync" Variant="Variant.Filled" Color="Color.Primary">
+    Open blurry dialog
+</MudButton>
+
 <!-- Enhanced Modal -->
 <Modal Title="Add New Pet" IsScrollable="true" Size="ModalSize.ExtraLarge" IsBackdropDismissible="false">
     <BodyTemplate>
-        <EditForm Model="@petViewModel" OnValidSubmit="SavePet" id="petForm">
-            <DataAnnotationsValidator />
-
-            <div class="container-fluid">
-                <div class="row g-4">
-                    <!-- Left Column - Form Fields -->
-                    <div class="col-lg-8">
-                        <div class="card h-100">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0"><Icon Name="IconName.InfoCircle" class="me-2" />Pet Information</h5>
-                            </div>
-                            <div class="card-body">
-                                <!-- Basic Information Section -->
-                                <div class="mb-4">
-                                    <h6 class="text-primary border-bottom pb-2 mb-3">Basic Information</h6>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="name" class="form-label fw-bold">
-                                                <Icon Name="IconName.Heart" class="me-1 text-danger" />Name <span class="text-danger">*</span>
-                                            </label>
-                                            <InputText id="name" class="form-control form-control-lg" @bind-Value="petViewModel.Name" placeholder="Enter pet's name" />
-                                            <ValidationMessage For="@(() => petViewModel.Name)" class="text-danger small" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="breed" class="form-label fw-bold">
-                                                <Icon Name="IconName.Award" class="me-1 text-warning" />Breed <span class="text-danger">*</span>
-                                            </label>
-                                            <InputText id="breed" class="form-control form-control-lg" @bind-Value="petViewModel.Breed" placeholder="Enter breed" />
-                                            <ValidationMessage For="@(() => petViewModel.Breed)" class="text-danger small" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Physical Characteristics -->
-                                <div class="mb-4">
-                                    <h6 class="text-primary border-bottom pb-2 mb-3">Physical Characteristics</h6>
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label for="age" class="form-label fw-bold">
-                                                <Icon Name="IconName.Clock" class="me-1 text-info" />Age <span class="text-danger">*</span>
-                                            </label>
-                                            <InputNumber id="age" class="form-control" @bind-Value="petViewModel.Age" placeholder="Years" />
-                                            <ValidationMessage For="@(() => petViewModel.Age)" class="text-danger small" />
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="species" class="form-label fw-bold">Species <span class="text-danger">*</span></label>
-                                            <InputSelect id="species" class="form-select" @bind-Value="petViewModel.Species">
-                                                @foreach (var species in Enum.GetValues<Species>())
-                                                {
-                                                    <option value="@species">@species</option>
-                                                }
-                                            </InputSelect>
-                                            <ValidationMessage For="@(() => petViewModel.Species)" class="text-danger small" />
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="gender" class="form-label fw-bold">Gender <span class="text-danger">*</span></label>
-                                            <InputSelect id="gender" class="form-select" @bind-Value="petViewModel.Gender">
-                                                @foreach (AnimalGender gender in Enum.GetValues(typeof(AnimalGender)))
-                                                {
-                                                    <option value="@gender">@gender</option>
-                                                }
-                                            </InputSelect>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="color" class="form-label fw-bold">Color <span class="text-danger">*</span></label>
-                                            <InputSelect id="color" class="form-select" @bind-Value="petViewModel.Color">
-                                                @foreach (var color in Enum.GetValues<AnimalColor>())
-                                                {
-                                                    <option value="@color">@color</option>
-                                                }
-                                            </InputSelect>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Description -->
-                                <div class="mb-4">
-                                    <label for="description" class="form-label fw-bold">
-                                        <Icon Name="IconName.FileText" class="me-1 text-success" />Description
-                                    </label>
-                                    @* <TextAreaInput id="description" class="form-control" rows="4" @bind-Value="petViewModel.Description"
-                                                   placeholder="Tell us about this pet's personality, habits, and special needs..." /> *@
-                                </div>
-
-                                <!-- Behavioral Traits -->
-                                <div class="mb-4">
-                                    <h6 class="text-primary border-bottom pb-2 mb-3">Behavioral Traits</h6>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <div class="form-check form-switch form-check-lg">
-                                                @* <CheckboxInput id="chkMicrochipped" Label="Microchipped" @bind-Value="petViewModel.Microchipped" /> *@
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-check form-switch">
-                                                @* <CheckboxInput id="goodWithKids" Label="Good with Kids" class="form-check-input" @bind-Value="petViewModel.GoodWithKids" /> *@
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-check form-switch">
-                                                @* <CheckboxInput id="goodWithOtherPets" Label="Good with Other Pet" class="form-check-input" @bind-Value="petViewModel.GoodWithOtherPets" /> *@
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Additional Information -->
-                                <div class="mb-4">
-                                    <h6 class="text-primary border-bottom pb-2 mb-3">Additional Information</h6>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <label for="healthStatus" class="form-label fw-bold">
-                                                <Icon Name="IconName.Activity" class="me-1 text-success" />Health Status <span class="text-danger">*</span>
-                                            </label>
-                                            <InputSelect id="healthStatus" class="form-select" @bind-Value="petViewModel.HealthStatus">
-                                                <option value="">Select Status</option>
-                                                @foreach (var healthStatus in Enum.GetValues<HealthStatus>())
-                                                {
-                                                    <option value="@healthStatus">@healthStatus</option>
-                                                }
-                                            </InputSelect>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="adoptionFee" class="form-label fw-bold">
-                                                <Icon Name="IconName.CurrencyDollar" class="me-1 text-warning" />Adoption Fee
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">$</span>
-                                                <InputNumber id="adoptionFee" class="form-control" @bind-Value="petViewModel.AdoptionFee" placeholder="0.00" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="adoptableSince" class="form-label fw-bold">
-                                                <Icon Name="IconName.Calendar" class="me-1 text-info" />Adoptable Since
-                                            </label>
-                                            @* <DateInput id="adoptableSince" class="form-control" @bind-Value="petViewModel.AdoptableSince" /> *@
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Contact Information -->
-                                <div class="mb-4">
-                                    <h6 class="text-primary border-bottom pb-2 mb-3">Contact & Location</h6>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="location" class="form-label fw-bold">
-                                                <Icon Name="IconName.PinMap" class="me-1 text-danger" />Location
-                                            </label>
-                                            <InputText id="location" class="form-control" @bind-Value="petViewModel.Location" placeholder="City, State" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="contactInformation" class="form-label fw-bold">
-                                                <Icon Name="IconName.Phone" class="me-1 text-success" />Contact Number
-                                            </label>
-                                            <InputNumber id="contactInformation" class="form-control" @bind-Value="petViewModel.ContactInformation" placeholder="Phone number" />
-                                            <ValidationMessage For="@(() => petViewModel.ContactInformation)" class="text-danger small" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column - Pet Display Picture and Images -->
-                    <div class="col-lg-4">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header bg-success text-white">
-                                        <h6 class="mb-0"><Icon Name="IconName.Image" class="me-2" />Display Picture</h6>
-                                    </div>
-                                    <div class="card-body text-center">
-                                        <InputFile id="photos" class="form-control mb-3" multiple OnChange="LoadFiles" accept="image/*" />
-                                        <small class="text-muted mb-3 d-block">Upload multiple photos of the pet</small>
-                                        @if (petViewModel.PetPhotos != null && petViewModel.PetPhotos.Any())
-                                        {
-                                            <div class="row">
-                                                @foreach (var (image, index) in petViewModel.PetPhotos.Select((img, i) => (img, i)))
-                                                {
-                                                    <div class="col-6">
-                                                        <div class="position-relative">
-                                                            <img src="@($"{Configuration["BlazorApiUrl"]}{image.PhotoUrl}")" alt="Pet photo @(index + 1)"
-                                                                 class="img-fluid rounded shadow-sm"
-                                                                 style="height: 80px; width: 100%; object-fit: cover;" />
-                                                            <button type="button" @onclick="() => DeletePetPhoto(image.Id)" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle p-1" style="margin: 2px;">
-                                                                <Icon Name="IconName.X" Size="IconSize.x6" />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </EditForm>
+       
     </BodyTemplate>
 
-    <FooterTemplate>
-        <div class="d-flex justify-content-between w-100">
-            <Button Color="ButtonColor.Secondary" @onclick="OnHideModal">
-                <Icon Name="IconName.X" class="me-2" />Cancel
-            </Button>
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="petForm">
-                <Icon Name="IconName.Save" class="me-2" />Save Pet
-            </Button>
-        </div>
-    </FooterTemplate>
+    
 </Modal>
 
 
@@ -235,9 +32,9 @@
                 <Button Color="ButtonColor.Light" Size="ButtonSize.Small" @onclick="RefreshGrid">
                     <Icon Name="IconName.RewindBtn" class="me-1" />Refresh
                 </Button>
-                <Button Color="ButtonColor.Success" @onclick="OnShowModal">
+               @*  <Button Color="ButtonColor.Success" @onclick="OnShowModal">
                     <Icon Name="IconName.Plus" class="me-2" />Add New Pet
-                </Button>
+                </Button> *@
             </div>
         </div>
     </div>
