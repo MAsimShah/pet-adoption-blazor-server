@@ -99,8 +99,10 @@
                 </MudItem>
             </MudGrid>
 
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">OK</MudButton>
+            <div class="d-flex justify-end">
+                <MudButton Size="Size.Medium" OnClick="Cancel">Cancel</MudButton>
+                <MudButton Size="Size.Medium" Color="Color.Primary" ButtonType="ButtonType.Submit">Save</MudButton>
+            </div>
         </EditForm>
     </DialogContent>
 </MudDialog>

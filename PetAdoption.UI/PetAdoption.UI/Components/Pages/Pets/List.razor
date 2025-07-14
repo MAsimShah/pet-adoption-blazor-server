@@ -2,235 +2,38 @@
 @inject HttpClient Http
 @inject IConfiguration Configuration
 @inject IDialogService DialogService
+@inject LoaderService Loader
+@inject ISnackbar Snackbar
+@inject IPetAdoptionAPI petAPI
 @attribute [Authorize]
 
 <PageTitle>Pets - PetAdoption</PageTitle>
 
-<MudButton @onclick="AddPetAsync" Variant="Variant.Filled" Color="Color.Primary">
-    Open blurry dialog
-</MudButton>
-
-<!-- Enhanced Modal -->
-<Modal Title="Add New Pet" IsScrollable="true" Size="ModalSize.ExtraLarge" IsBackdropDismissible="false">
-    <BodyTemplate>
-       
-    </BodyTemplate>
-
-    
-</Modal>
-
-
-<!-- Grid design -->
-<!-- Pet Management Header -->
-<div class="card mb-4">
-    <div class="card-header bg-primary text-white">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">
-                Pet Management
-            </h4>
-            <div class="d-flex gap-2">
-                <Button Color="ButtonColor.Light" Size="ButtonSize.Small" @onclick="RefreshGrid">
-                    <Icon Name="IconName.RewindBtn" class="me-1" />Refresh
-                </Button>
-               @*  <Button Color="ButtonColor.Success" @onclick="OnShowModal">
-                    <Icon Name="IconName.Plus" class="me-2" />Add New Pet
-                </Button> *@
-            </div>
-        </div>
+<div class="container-fluid pt-4">
+    <div>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudButton @onclick="AddPetAsync" Variant="Variant.Filled" Color="Color.Primary"> Add Pet </MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <!-- Grid design -->
+                <MudDataGrid T="PetViewModel" Items="@petsList" ReadOnly="false" EditMode="DataGridEditMode.Form" ColumnResizeMode="ResizeMode.Column"
+                             StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
+                             Bordered="true" Dense="true" EditTrigger="@(false ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="Name" Editable="false" />
+                        <PropertyColumn Property="x => x.Age" Title="Age" />
+                        <PropertyColumn Property="x => x.Breed" Title="Breed" />
+                        <PropertyColumn Property="x => x.Gender" Title="Gender" />
+                        <PropertyColumn Property="x => x.Description" Title="Description" />
+                        <TemplateColumn CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
     </div>
-</div>
-
-<!-- Enhanced Grid Container -->
-<div class="card shadow-sm">
-    <div class="card-header bg-light">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h6 class="mb-0 text-primary">
-                    Pet List
-                </h6>
-            </div>
-            <div class="col-md-6 text-end">
-                <small class="text-muted">
-                    <Icon Name="IconName.Database" class="me-1" />
-                    Total: @petsList?.Count() pets
-                </small>
-            </div>
-        </div>
-    </div>
-
-    @if (petsList == null || petsList.Count == 0)
-    {
-        <p>No pets found.</p>
-    }
-    else
-    {
-        <div class="card-body p-0">
-            <Grid TItem="PetViewModel"
-                  Data="@petsList"
-                  Class="table table-hover mb-0"
-                  Responsive="true"
-                  AllowFiltering="true"
-                  AllowPaging="true"
-                  PageSize="10"
-                  AllowSorting="true"
-                  EmptyText="No pets found. Click 'Add New Pet' to get started!"
-                  LoadingText="Loading adorable pets...">
-
-                <GridColumns>
-                    <!-- Pet Photo & Name Column -->
-                    <GridColumn TItem="PetViewModel" HeaderText="Pet" PropertyName="Name" SortKeySelector="item => item.Name">
-                        <HeaderContent>
-                            <Icon Name="IconName.Heart" class="me-1 text-danger" />
-                            <strong>Name/Breed</strong>
-                        </HeaderContent>
-                        <ChildContent>
-                            <div class="d-flex align-items-center py-2">
-                                <div class="me-3">
-                                    @* @if (context.PetPhotos != null && context.PetPhotos.Any())
-                                    {
-                                        <img src="@($"{Configuration["BlazorApiUrl"]}{context.PetPhotos.First().PhotoUrl}")" alt="@context.Name"
-                                             class="rounded-circle shadow-sm"
-                                             style="width: 50px; height: 50px; object-fit: cover;" />
-                                    }
-                                    else
-                                    {
-                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm"
-                                             style="width: 50px; height: 50px;">
-                                            <Icon Name="IconName.Camera" class="text-muted" />
-                                        </div>
-                                    } *@
-                                </div>
-                                <div>
-                                    @* <h6 class="mb-1 fw-bold text-primary">@context.Name</h6> *@
-                                    <small class="text-muted">
-                                        @* <Icon Name="IconName.Briefcase" class="me-1" />@context.Breed *@
-                                    </small>
-                                </div>
-                            </div>
-                        </ChildContent>
-                    </GridColumn>
-
-                    <!-- Age & Species Column -->
-                    <GridColumn TItem="PetViewModel" HeaderText="Info" PropertyName="Age" SortKeySelector="item => item.Age">
-                        <HeaderContent>
-                            <Icon Name="IconName.Info" class="me-1 text-info" />
-                            <strong>Basic Info</strong>
-                        </HeaderContent>
-                        <ChildContent>
-                            <div class="py-2">
-                                <div class="mb-1">
-                                    <small class="text-muted">Age:</small>
-                                    <span class="badge bg-info ms-1">
-                                        <Icon Name="IconName.Clock" class="me-1" Size="IconSize.x5" />
-                                        @* @context.Age years *@
-                                    </span>
-                                </div>
-                                <div class="mb-1">
-                                    <small class="text-muted">Species:</small>
-                                    @* <span class="badge bg-secondary ms-1">@context.Species</span> *@
-                                </div>
-                                <div>
-                                    <small class="text-muted">Gender:</small>
-                                    @* <span class="badge @(context.Gender == AnimalGender.Male ? "bg-primary" : "bg-pink") ms-1">
-                                        @context.Gender 
-                                    </span> *@
-                                </div>
-                            </div>
-                        </ChildContent>
-                    </GridColumn>
-
-                    <!-- Health & Status Column -->
-                    <GridColumn TItem="PetViewModel" HeaderText="Health" PropertyName="HealthStatus">
-                        <HeaderContent>
-                            <Icon Name="IconName.Activity" class="me-1 text-success" />
-                            <strong>Health Status</strong>
-                        </HeaderContent>
-                        <ChildContent>
-                            <div class="py-2">
-                                @* <span class="badge @GetHealthStatusBadgeClass(context.HealthStatus) mb-2">
-                                    <Icon Name="IconName.Heart" class="me-1" Size="IconSize.x5" />
-                                    @context.HealthStatus
-                                </span> *@
-                                <div class="small">
-                                    @* @if (context.Microchipped)
-                                    {
-                                        <span class="badge bg-success me-1">
-                                            <Icon Name="IconName.Shield" class="me-1" Size="IconSize.x5" />
-                                            Microchipped
-                                        </span>
-                                    }
-                                    @if (context.GoodWithKids)
-                                    {
-                                        <span class="badge bg-warning me-1">
-                                            <Icon Name="IconName.Person" class="me-1" Size="IconSize.x5" />
-                                            Kid-Friendly
-                                        </span>
-                                    }
-                                    @if (context.GoodWithOtherPets)
-                                    {
-                                        <span class="badge bg-info">
-                                            <Icon Name="IconName.Heart" class="me-1" Size="IconSize.x5" />
-                                            Pet-Friendly
-                                        </span>
-                                    } *@
-                                </div>
-                            </div>
-                        </ChildContent>
-                    </GridColumn>
-
-                    <!-- Adoption Info Column -->
-                    <GridColumn TItem="PetViewModel" HeaderText="Adoption" PropertyName="AdoptionFee" SortKeySelector="item => item.AdoptionFee">
-                        <HeaderContent>
-                            <Icon Name="IconName.CurrencyDollar" class="me-1 text-warning" />
-                            <strong>Adoption Info</strong>
-                        </HeaderContent>
-                        <ChildContent>
-                            <div class="py-2">
-                                <div class="mb-2">
-                                    <h6 class="mb-0 text-success fw-bold">
-                                        @* $ @context.AdoptionFee?.ToString("N2") *@
-                                    </h6>
-                                    <small class="text-muted">Adoption Fee</small>
-                                </div>
-                                <div class="mb-1">
-                                    <small class="text-muted">
-                                        <Icon Name="IconName.Calendar" class="me-1" />
-                                        @* Available since: @context.AdoptableSince?.ToString("MMM dd, yyyy") *@
-                                    </small>
-                                </div>
-                                <div>
-                                    <small class="text-muted">
-                                        <Icon Name="IconName.PinMap" class="me-1" />
-                                        @* @context.Location *@
-                                    </small>
-                                </div>
-                            </div>
-                        </ChildContent>
-                    </GridColumn>
-
-                    <!-- Actions Column -->
-                    <GridColumn TItem="PetViewModel" HeaderText="Actions">
-                        <HeaderContent>
-                            <Icon Name="IconName.Gear" class="me-1 text-secondary" />
-                            <strong>Actions</strong>
-                        </HeaderContent>
-                        <ChildContent>
-                            <div class="d-flex gap-1 py-2">
-                                @* <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ViewPet(context)">
-                                    <Icon Name="IconName.Eye" Size="IconSize.x5" />
-                                </Button>
-                                <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="() => EditPet(context.Id)">
-                                    <Icon Name="IconName.Pencil" Size="IconSize.x5" />
-                                </Button>
-                                <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => DeletePet(context.Id)">
-                                    <Icon Name="IconName.Trash2" Size="IconSize.x5" />
-                                </Button> *@
-                            </div>
-                        </ChildContent>
-                    </GridColumn>
-                </GridColumns>
-            </Grid>
-        </div>
-    }
-
 </div>
