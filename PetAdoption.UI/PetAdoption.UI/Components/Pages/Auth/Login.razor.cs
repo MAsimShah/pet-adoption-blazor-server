@@ -31,7 +31,7 @@ namespace PetAdoption.UI.Components.Pages.Auth
             catch (Exception ex)
             {
                 Loader.Hide();
-                Snackbar.Add("Something went wrong!", Severity.Success);
+                Snackbar.Add("Something went wrong!", Severity.Error);
             }
             finally
             {

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using MudBlazor;
+﻿using MudBlazor;
 
 namespace PetAdoption.UI.Components.Layout
 {
@@ -7,7 +6,6 @@ namespace PetAdoption.UI.Components.Layout
     {
         private bool showLoader;
         private bool _drawerOpen = true;
-        private bool _isDarkMode = false;
         private MudTheme? _theme = null;
 
         protected override void OnInitialized()
@@ -34,15 +32,6 @@ namespace PetAdoption.UI.Components.Layout
             };
         }
 
-        private void DrawerToggle()
-        {
-            _drawerOpen = !_drawerOpen;
-        }
-
-        private void DarkModeToggle()
-        {
-            _isDarkMode = !_isDarkMode;
-        }
 
         private readonly PaletteLight _lightPalette = new()
         {
@@ -81,12 +70,6 @@ namespace PetAdoption.UI.Components.Layout
             TableLines = "#33323e",
             Divider = "#292838",
             OverlayLight = "#1e1e2d80",
-        };
-
-        public string DarkLightModeButtonIcon => _isDarkMode switch
-        {
-            true => Icons.Material.Rounded.AutoMode,
-            false => Icons.Material.Outlined.DarkMode,
         };
     }
 }

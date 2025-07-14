@@ -15,5 +15,14 @@ namespace PetAdoption.UI.Interfaces
 
         [Post("/api/Auth/RefreshToken")]
         Task<AuthToken> RefreshTokenAsync([Body] string token);
+
+        [Post("/api/Pets/Add")]
+        Task<PetViewModel> AddPetAsync([Body] PetViewModel model);
+
+        [Post("/api/Pets/Update")]
+        Task<PetViewModel> UpdatePetAsync([Body] PetViewModel model);
+
+        [Post("/api/Pets/Upload-pet-files")]
+        Task<Task> UploadedPetFilesAsync([Body] Base64UploadRequest model);
     }
 }

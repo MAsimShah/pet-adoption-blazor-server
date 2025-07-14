@@ -1,0 +1,106 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inject IDialogService DialogService
+@inject LoaderService Loader
+@inject ISnackbar Snackbar
+@inject IPetAdoptionAPI petAPI
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@model" OnValidSubmit="SavePet">
+            <DataAnnotationsValidator />
+
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudTextField Label="Name" @bind-Value="model.Name" Variant="Variant.Filled" For="@(() => model.Name)" />
+
+                        <MudTextField Label="Enter breed" @bind-Value="model.Breed" Variant="Variant.Filled" For="@(() => model.Breed)" />
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudNumericField Label="Age" @bind-Value="model.Age" Variant="Variant.Filled" For="@(() => model.Age)" />
+
+                        <MudNumericField Label="Contact Information" @bind-Value="model.ContactInformation" Variant="Variant.Filled" For="@(() => model.ContactInformation)" />
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudSelect Variant="Variant.Filled" Label="Species" @bind-Value="model.Species">
+                            @foreach (var species in Enum.GetValues<Species>())
+                            {
+                                <MudSelectItem Value="@species">@species</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect Variant="Variant.Filled" Label="Gender" @bind-Value="model.Gender">
+                            @foreach (var animalGender in Enum.GetValues<AnimalGender>())
+                            {
+                                <MudSelectItem Value="@animalGender">@animalGender</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudSelect Variant="Variant.Filled" Label="Color" @bind-Value="model.Color">
+                            @foreach (var animalColor in Enum.GetValues<AnimalColor>())
+                            {
+                                <MudSelectItem Value="@animalColor">@animalColor</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect Variant="Variant.Filled" Label="Health Status" @bind-Value="model.HealthStatus">
+                            @foreach (var status in Enum.GetValues<HealthStatus>())
+                            {
+                                <MudSelectItem Value="@status">@status</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudNumericField @bind-Value="model.AdoptionFee" Label="Adoption Fee" Variant="Variant.Filled" />
+                        <MudTextField Label="Location" @bind-Value="model.Location" Variant="Variant.Filled" For="@(() => model.Location)" />
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudDatePicker Label="Adoptable Since" Editable="true" @bind-Date="model.AdoptableSince" Placeholder="Select Date" For="@(() => model.AdoptableSince)" />
+                        <MudCheckBox Color="Color.Primary" Label="Microchipped" @bind-Value="model.Microchipped"></MudCheckBox>
+                        <MudCheckBox Color="Color.Primary" Label="Good With Kids" @bind-Value="model.GoodWithKids"></MudCheckBox>
+                        <MudCheckBox Color="Color.Primary" Label="Good With Other Pets" @bind-Value="model.GoodWithOtherPets"></MudCheckBox>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudItem xs="6">
+                            <MudStack Row="true">
+                                <MudItem xs="4">
+                                    <MudFileUpload T="IBrowserFile" OnFilesChanged="UploadProfilePhoto" multiple Class="px-2 ml-2">
+                                        <ActivatorContent>
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Secondary">
+                                                Pics @(UploadedImages.Any() ? UploadedImages.Count() : "")
+                                            </MudButton>
+                                        </ActivatorContent>
+                                    </MudFileUpload>
+                                </MudItem>
+                                <MudItem xs="2">
+                                     @(UploadedImages.Any() ? $"Files: {UploadedImages.Count()}" : "")
+                                </MudItem>
+                            </MudStack>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudTextField Label="Description" Lines="3" @bind-Value="model.Description" Variant="Variant.Filled" For="@(() => model.Description)" />
+                        </MudItem>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">OK</MudButton>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
