@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Hosting.Server;
 using MudBlazor;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.DTOs;
@@ -32,8 +31,6 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
             return base.OnInitializedAsync();
         }
-
-        private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 
         private void Cancel() => MudDialog.Cancel();
 
