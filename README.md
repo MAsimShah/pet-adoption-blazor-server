@@ -30,7 +30,7 @@ It’s ideal for developers exploring:
 ### Frontend – Blazor Server
 - **.NET 9**
 - **Razor Components**
-- **MudBlazor**
+- **MudBlazor** [https://mudblazor.com/getting-started/installation]
 - **SignalR** (real-time notifications)
 - **Dependency Injection**
 - **JWT Authentication** or **ASP.NET Identity** (planned)
