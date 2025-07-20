@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using PetAdoption.UI.Components.Pages.PetRequests;
 using PetAdoption.UI.Services;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 
@@ -44,6 +48,9 @@ namespace PetAdoption.UI.Auth
 
             try
             {
+                // Instead of assigning an AuthenticationHeaderValue, assign the token string directly
+                Request.Headers["Authorization"] = $"Bearer {token}";
+
                 var handler = new JwtSecurityTokenHandler();
                 var jwt = handler.ReadJwtToken(token);
                 
