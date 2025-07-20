@@ -27,6 +27,12 @@ namespace PetAdoption.UI.Components.Models
             AdoptionFee = model.AdoptionFee;
             AdoptableSince = model.AdoptableSince;
             Location = model.Location;
+            PetPhotos = model.PetPhotos?.Select(photo => new PetPhotosViewModel
+            {
+                Id = photo.Id,
+                PetId = photo.PetId,
+                PhotoUrl = photo.PhotoUrl
+            }).ToList() ?? new List<PetPhotosViewModel>();
         }
 
         public int Id { get; set; }

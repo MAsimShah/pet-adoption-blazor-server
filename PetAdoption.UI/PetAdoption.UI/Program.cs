@@ -8,6 +8,8 @@ using PetAdoption.UI.Components;
 using PetAdoption.UI.Interfaces;
 using PetAdoption.UI.Services;
 using Refit;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,14 @@ builder.Services.AddMudServices();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents().AddCircuitOptions(e => e.DetailedErrors = true);
 
-builder.Services.AddRefitClient<IPetAdoptionAPI>()
+builder.Services.AddRefitClient<IPetAdoptionAPI>(provider => new RefitSettings
+     {
+         ContentSerializer = new SystemTextJsonContentSerializer(new JsonSerializerOptions
+         {
+             PropertyNameCaseInsensitive = true,
+             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+         })
+     })
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7039"))
     .AddHttpMessageHandler<AuthorizationHandler>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7039") });

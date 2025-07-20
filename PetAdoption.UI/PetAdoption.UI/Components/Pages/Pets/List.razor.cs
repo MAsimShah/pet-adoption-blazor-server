@@ -73,33 +73,6 @@ namespace PetAdoption.UI.Components.Pages.Pets
             }
         }
 
-        //private async Task DeletePetPhoto(int photoId)
-        //{
-        //    try
-        //    {
-        //        Loader.Show();
-        //        var response = await petAPI.DeletePetPhotoAsync(photoId);
-
-        //        // grid refresh with db calling
-        //        var petToRemove = petsList.PetPhotos.FirstOrDefault(p => p.Id == photoId);
-        //        if (petToRemove != null)
-        //        {
-        //            petViewModel.PetPhotos = petViewModel.PetPhotos.Where(p => p.Id != photoId).ToList();
-        //        }
-
-        //        // render UI
-        //        StateHasChanged();
-        //    }
-        //    catch
-        //    {
-        //        Loader.Hide();
-        //        Snackbar.Add($"Something went wrong", Severity.Error);
-        //    }
-        //    finally
-        //    {
-        //        Loader.Hide();
-        //    }
-        //}
 
         private string GetHealthStatusBadgeClass(HealthStatus status)
         {

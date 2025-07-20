@@ -4,6 +4,7 @@
 @inject LoaderService Loader
 @inject ISnackbar Snackbar
 @inject IPetAdoptionAPI petAPI
+@inject IConfiguration Configuration
 
 <MudDialog>
     <DialogContent>
@@ -77,19 +78,30 @@
                     <MudStack Row="true">
                         <MudItem xs="6">
                             <MudStack Row="true">
-                                <MudItem xs="4">
+                                <MudItem xs="2">
                                     <MudFileUpload T="IBrowserFile" OnFilesChanged="UploadProfilePhoto" multiple Class="px-2 ml-2">
                                         <ActivatorContent>
                                             <MudButton Variant="Variant.Filled"
                                                        Color="Color.Secondary">
-                                                Pics @(UploadedImages.Any() ? UploadedImages.Count() : "")
+                                                Upload Pics @(UploadedImages.Any() ? UploadedImages.Count() : "")
                                             </MudButton>
                                         </ActivatorContent>
                                     </MudFileUpload>
                                 </MudItem>
-                                <MudItem xs="2">
-                                     @(UploadedImages.Any() ? $"Files: {UploadedImages.Count()}" : "")
-                                </MudItem>
+                                @if (model.PetPhotos != null && model.PetPhotos.Any())
+                                {
+                                    <MudItem xs="2">
+                                        @foreach (var photo in model.PetPhotos)
+                                        {
+                                            <MudBadge Color="Color.Error" Icon="@Icons.Material.Filled.Remove" Overlap="true" Bordered="true" Class="ml-2 cursor-pointer"
+                                                      OnClick="@(() => DeletePhoto(photo.Id))">
+                                                <MudAvatar>
+                                                    <MudImage Src="@($"{apiUrl}{photo.PhotoUrl}")" />
+                                                </MudAvatar>
+                                            </MudBadge>
+                                        }
+                                    </MudItem>
+                                }
                             </MudStack>
                         </MudItem>
 

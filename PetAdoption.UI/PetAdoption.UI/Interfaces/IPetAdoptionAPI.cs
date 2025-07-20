@@ -36,8 +36,8 @@ namespace PetAdoption.UI.Interfaces
         [Delete("/api/Pets/Delete/{id}")]
         Task DeletePetAsync(int id);
 
-        [Delete("/api/Pets/DeletePhoto/{photoId}")]
-        Task DeletePetPhotoAsync(int photoId);
+        [Delete("/api/Pets/DeletePhoto/{id}")]
+        Task DeletePetPhotoAsync(int id);
 
         #endregion Pets
     }

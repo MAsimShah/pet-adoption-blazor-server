@@ -2,31 +2,6 @@
 {
     public class PetModel : BaseModel
     {
-        public PetModel()
-        {
-            
-        }
-       
-        public PetModel(PetViewModel model)
-        {
-            Id = model.Id;
-            Name = model.Name;
-            Breed = model.Breed;
-            Age = model.Age;
-            ContactInformation = model.ContactInformation;
-            Species = model.Species;
-            AdoptableSince = model.AdoptableSince;
-            AdoptionFee = model.AdoptionFee;
-            Color = model.Color;
-            Description = model.Description;
-            Gender = model.Gender;
-            GoodWithKids = model.GoodWithKids;
-            GoodWithOtherPets = model.GoodWithOtherPets;
-            HealthStatus = model.HealthStatus;
-            Location = model.Location;
-            Microchipped = model.Microchipped;
-        }
-
         public string Name { get; set; } = string.Empty;
         public string Breed { get; set; } = string.Empty;
         public int Age { get; set; }
@@ -44,6 +19,8 @@
         public decimal? AdoptionFee { get; set; } = 0;
         public DateTime? AdoptableSince { get; set; }
         public string? Location { get; set; }
+
+        public List<PetPhotoModel> PetPhotos { get; set; } = new List<PetPhotoModel>();
     }
 
     public enum AnimalGender
