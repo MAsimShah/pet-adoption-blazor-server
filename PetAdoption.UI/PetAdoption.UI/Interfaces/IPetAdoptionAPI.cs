@@ -19,16 +19,20 @@ namespace PetAdoption.UI.Interfaces
         #region Pets
 
         [Post("/api/Pets/Add")]
-        Task<PetViewModel> AddPetAsync([Body] PetViewModel model);
+        Task<PetModel> AddPetAsync([Body] PetModel model);
 
-        [Post("/api/Pets/Update")]
-        Task<PetViewModel> UpdatePetAsync([Body] PetViewModel model);
+        [Put("/api/Pets/Update")]
+        Task<PetModel> UpdatePetAsync([Body] PetModel model);
 
         [Post("/api/Pets/Upload-pet-files")]
-        Task<Task> UploadedPetFilesAsync([Body] Base64UploadRequest model);
+        Task<List<string>> UploadedPetFilesAsync([Body] Base64UploadRequest model);
 
         [Get("/api/Pets/get-list")]
         Task<List<PetViewModel>> GetAllPetsAsync();
+
+        [Get("/api/Pets/Get/{petId}")]
+        Task<PetModel> GetPetAsync(int petId);
+
 
         [Delete("/api/Pets/Delete/{petId}")]
         Task<Task> DeletePetAsync(int petId);

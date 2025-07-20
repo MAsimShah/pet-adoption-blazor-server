@@ -1,12 +1,12 @@
 ﻿using MudBlazor;
 using PetAdoption.UI.Components.Models;
+using PetAdoption.UI.Components.Models.APIModels;
 
 namespace PetAdoption.UI.Components.Pages.Pets
 {
     public partial class List
     {
         private List<PetViewModel> petsList = new();
-        private List<string> _events = new();
         DialogOptions dialogOptions = new DialogOptions
         {
             BackgroundClass = "my-custom-class",
@@ -26,19 +26,40 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
         #region methods
 
-        void StartedEditingItem(PetViewModel item)
+        async Task EditPet(int petId)
         {
-            _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
-        }
+            Loader.Show();
 
-        void CanceledEditingItem(PetViewModel item)
-        {
-            _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
-        }
+            try
+            {
+                var result = await petAPI.GetPetAsync(petId);
 
-        void CommittedItemChanges(PetViewModel item)
-        {
-            _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+                if (result is null)
+                {
+                    Snackbar.Add("Not fetched pet info", Severity.Error);
+                    return;
+                }
+
+                PetViewModel model = new(result);
+
+                var parameters = new DialogParameters<AdddPetModal> { { x => x.EditModel, model } };
+                var dialog = await DialogService.ShowAsync<AdddPetModal>("Edit new Pet", parameters, dialogOptions);
+                var dialogResult = await dialog.Result;
+
+                if (dialogResult != null && !dialogResult.Canceled)
+                {
+                    await RefreshGrid();
+                }
+            }
+            catch (Exception)
+            {
+                Loader.Hide();
+                Snackbar.Add("Not fetched pet info", Severity.Error);
+            }
+            finally
+            {
+                Loader.Hide();
+            }
         }
 
         private async Task AddPetAsync()

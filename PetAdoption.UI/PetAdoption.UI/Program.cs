@@ -17,18 +17,22 @@ builder.Services.AddMudServices();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents().AddCircuitOptions(e => e.DetailedErrors = true);
 
-builder.Services.AddRefitClient<IPetAdoptionAPI>().ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7039"));
+builder.Services.AddRefitClient<IPetAdoptionAPI>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7039"))
+    .AddHttpMessageHandler<AuthorizationHandler>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7039") });
 
 builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, CustomJwtAuthenticateHandler>("jwt", options => { });
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState(); // implment cascading state
 
+builder.Services.AddHttpContextAccessor(); // Required
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<CookieStorageService>();
 //builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthorizationHandler>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<CustomAuthStateProvider>());

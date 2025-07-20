@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using PetAdoption.UI.Components.Models;
+using PetAdoption.UI.Components.Models.APIModels;
 using PetAdoption.UI.Components.Models.DTOs;
 using System.Text;
 using System.Text.Json;
@@ -47,12 +48,20 @@ namespace PetAdoption.UI.Components.Pages.Pets
             {
                 Loader.Show();
 
-                if (model.Id > 0)
-                    model = await petAPI.UpdatePetAsync(model);
-                else
-                    model = await petAPI.AddPetAsync(model);
-
                 if (model is null)
+                {
+                    Snackbar.Add($"Please fill all the required fields", Severity.Error);
+                    return;
+                }
+
+                PetModel apiResult = new(model);
+
+                if (apiResult.Id > 0)
+                    apiResult = await petAPI.UpdatePetAsync(apiResult);
+                else
+                    apiResult = await petAPI.AddPetAsync(apiResult);
+
+                if (apiResult is null)
                 {
                     Snackbar.Add($"{model.Name} not saved successfully! Please try again", Severity.Error);
                     return;
@@ -78,20 +87,25 @@ namespace PetAdoption.UI.Components.Pages.Pets
                         images.Add(new Base64ImageFile(file.Name, base64WithPrefix));
                     }
 
-                    Base64UploadRequest payload = new Base64UploadRequest() { PetId = model.Id, Images = images };
+                    Base64UploadRequest payload = new Base64UploadRequest() { PetId = apiResult.Id, Images = images };
 
                     var json = JsonSerializer.Serialize(payload);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var filesResponse = await petAPI.UploadedPetFilesAsync(payload);
+                    var files = await petAPI.UploadedPetFilesAsync(payload);
 
-                    if (filesResponse is null) Snackbar.Add($"Files not saved successfully!", Severity.Error);
-                    else Snackbar.Add($"{model.Name} is saved successfully", Severity.Success);
+                    if (files is null || !files.Any()) 
+                    {
+                        Snackbar.Add($"Uploaded files not saved successfully!", Severity.Error);
+                        return;
+                    }
                 }
+
+                Snackbar.Add($"{model.Name} is saved successfully", Severity.Success);
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Something went wrong!", Severity.Error);
+                Snackbar.Add($"Not able to save info of Pet.", Severity.Error);
                 Loader.Hide();
             }
             finally

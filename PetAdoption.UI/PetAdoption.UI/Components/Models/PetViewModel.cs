@@ -1,11 +1,34 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using System.ComponentModel;
+﻿using PetAdoption.UI.Components.Models.APIModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace PetAdoption.UI.Components.Models
 {
     public class PetViewModel
     {
+        public PetViewModel()
+        {
+            
+        }
+        public PetViewModel(PetModel model)
+        {
+            Id = model.Id;
+            Name = model.Name;
+            Breed = model.Breed;
+            Age = model.Age;
+            ContactInformation = model.ContactInformation;
+            Species = model.Species;
+            Gender = model.Gender;
+            Color = model.Color;
+            HealthStatus = model.HealthStatus;
+            Description = model.Description;
+            Microchipped = model.Microchipped;
+            GoodWithKids = model.GoodWithKids;
+            GoodWithOtherPets = model.GoodWithOtherPets;
+            AdoptionFee = model.AdoptionFee;
+            AdoptableSince = model.AdoptableSince;
+            Location = model.Location;
+        }
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
@@ -43,54 +66,5 @@ namespace PetAdoption.UI.Components.Models
         public string? Location { get; set; }
 
         public List<PetPhotosViewModel> PetPhotos { get; set; }
-    }
-
-    public enum AnimalGender
-    {
-        Male = 1,
-        Female = 2
-    }
-
-    public enum Species
-    {
-        Dog,
-        Cat,
-        Rabbit,
-        Bird,
-        Hamster,
-        Other
-    }
-
-    public enum WeightCategory
-    {
-        [Description("Small ( < 15kg)")]
-        Small,  // For pets less than 15kg
-
-        [Description("Medium (15 - 30kg)")]
-        Medium, // For pets between 15-30kg
-
-        [Description("Large ( > 30kg)")]
-        Large   // For pets above 30kg
-    }
-
-    public enum AnimalColor
-    {
-        Black,
-        White,
-        Brown,
-        Grey,
-        Tan,
-        MultiColor,
-        Other
-    }
-
-    public enum HealthStatus
-    {
-        Vaccinated,
-        Neutered,
-        SpecialMedicalNeeds,
-        GoodHealth,
-        UnderTreatment,
-        Other
     }
 }

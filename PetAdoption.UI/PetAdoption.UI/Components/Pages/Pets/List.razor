@@ -17,18 +17,18 @@
             </MudItem>
             <MudItem xs="12">
                 <!-- Grid design -->
-                <MudDataGrid T="PetViewModel" Items="@petsList" ReadOnly="false" EditMode="DataGridEditMode.Form" ColumnResizeMode="ResizeMode.Column"
-                             StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
-                             Bordered="true" Dense="true" EditTrigger="@(false ? DataGridEditTrigger.OnRowClick : DataGridEditTrigger.Manual)">
+                <MudDataGrid T="PetViewModel" Items="@petsList" ColumnResizeMode="ResizeMode.Column" Bordered="true" Dense="true" >
                     <Columns>
                         <PropertyColumn Property="x => x.Name" Title="Name" Editable="false" />
-                        <PropertyColumn Property="x => x.Age" Title="Age" />
-                        <PropertyColumn Property="x => x.Breed" Title="Breed" />
-                        <PropertyColumn Property="x => x.Gender" Title="Gender" />
-                        <PropertyColumn Property="x => x.Description" Title="Description" />
+                        <PropertyColumn Property="x => x.Age" Title="Age" Editable="false" />
+                        <PropertyColumn Property="x => x.Breed" Title="Breed" Editable="false" />
+                        <PropertyColumn Property="x => x.Gender" Title="Gender" Editable="false" />
+                        <PropertyColumn Property="x => x.Description" Title="Description" Editable="false" />
                         <TemplateColumn CellClass="d-flex justify-end">
                             <CellTemplate>
-                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+                                <MudStack Row>
+                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => EditPet(context.Item.Id))" />
+                                </MudStack>
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
