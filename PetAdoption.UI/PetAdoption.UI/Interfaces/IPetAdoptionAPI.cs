@@ -33,12 +33,11 @@ namespace PetAdoption.UI.Interfaces
         [Get("/api/Pets/Get/{petId}")]
         Task<PetModel> GetPetAsync(int petId);
 
-
-        [Delete("/api/Pets/Delete/{petId}")]
-        Task<Task> DeletePetAsync(int petId);
+        [Delete("/api/Pets/Delete/{id}")]
+        Task DeletePetAsync(int id);
 
         [Delete("/api/Pets/DeletePhoto/{photoId}")]
-        Task<Task> DeletePetPhotoAsync(int photoId);
+        Task DeletePetPhotoAsync(int photoId);
 
         #endregion Pets
     }

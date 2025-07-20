@@ -113,61 +113,21 @@ namespace PetAdoption.UI.Components.Pages.Pets
             };
         }
 
-        private void ViewPet(PetViewModel pet)
-        {
-            // View pet details logic
-        }
-
-        //private async Task EditPet(int petId)
-        //{
-        //    HttpResponseMessage? response = null;
-
-        //    try
-        //    {
-        //        Loader.Show();
-        //        response = await Http.GetAsync($"/api/Pets/Get/{petId}");
-
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            // petViewModel = await response.Content.ReadFromJsonAsync<PetViewModel>();
-        //            // EditContext editContext = new EditContext(petViewModel);
-        //            //   await modal.ShowAsync();
-        //        }
-
-        //        //var parameters = new DialogParameters<AdddPetModal> { { x => x.EditModel, new PetViewModel() } };
-        //        //var dialog = await DialogService.ShowAsync<AdddPetModal>("Add new Pet", dialogOptions);
-        //        //var result = await dialog.Result;
-
-        //        //if (!result.Canceled)
-        //        //{
-        //        //    var tt = "";
-        //        //}
-
-        //    }
-        //    catch
-        //    {
-        //        Snackbar.Add($"Something went wrong", Severity.Error);
-        //    }
-        //    finally
-        //    {
-        //        Loader.Hide();
-        //    }
-        //}
-
-        private async Task DeletePet(int petId)
+        private async Task DeletePet(int id)
         {
             try
             {
                 Loader.Show();
-                var response = await petAPI.DeletePetAsync(petId);
+                await petAPI.DeletePetAsync(id);
 
                 // grid refresh with db calling
-                var petToRemove = petsList.FirstOrDefault(p => p.Id == petId);
+                var petToRemove = petsList.FirstOrDefault(p => p.Id == id);
                 if (petToRemove != null)
                 {
-                    petsList = petsList.Where(p => p.Id != petId).ToList();
+                    petsList = petsList.Where(p => p.Id != id).ToList();
                 }
 
+                Snackbar.Add($"Pet info deleted successfully", Severity.Success);
                 StateHasChanged();
             }
             catch
