@@ -19,12 +19,14 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
         public List<IBrowserFile> UploadedImages { get; set; } = new List<IBrowserFile>();
         private PetViewModel model = new PetViewModel();
+        private string? apiUrl = "";
 
 
         #region methods
 
         protected override Task OnInitializedAsync()
         {
+            apiUrl = Configuration["BlazorApiUrl"];
             if (EditModel != null && EditModel.Id > 0)
             {
                 model = EditModel;
@@ -42,8 +44,6 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
         private async Task SavePet()
         {
-
-            PetViewModel response = null;
             try
             {
                 Loader.Show();
@@ -54,7 +54,25 @@ namespace PetAdoption.UI.Components.Pages.Pets
                     return;
                 }
 
-                PetModel apiResult = new(model);
+                PetModel apiResult = new()
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    Breed = model.Breed,
+                    Age = model.Age,
+                    ContactInformation = model.ContactInformation,
+                    Species = model.Species,
+                    AdoptableSince = model.AdoptableSince,
+                    AdoptionFee = model.AdoptionFee,
+                    Color = model.Color,
+                    Description = model.Description,
+                    Gender = model.Gender,
+                    GoodWithKids = model.GoodWithKids,
+                    GoodWithOtherPets = model.GoodWithOtherPets,
+                    HealthStatus = model.HealthStatus,
+                    Location = model.Location,
+                    Microchipped = model.Microchipped
+                };
 
                 if (apiResult.Id > 0)
                     apiResult = await petAPI.UpdatePetAsync(apiResult);
@@ -102,6 +120,7 @@ namespace PetAdoption.UI.Components.Pages.Pets
                 }
 
                 Snackbar.Add($"{model.Name} is saved successfully", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
             }
             catch (Exception ex)
             {
@@ -111,7 +130,34 @@ namespace PetAdoption.UI.Components.Pages.Pets
             finally
             {
                 Loader.Hide();
-                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+
+        private async Task DeletePhoto(int id)
+        {
+            try
+            {
+                Loader.Show();
+                await petAPI.DeletePetPhotoAsync(id);
+
+                // grid refresh with db calling
+                var petToRemove = model.PetPhotos.FirstOrDefault(p => p.Id == id);
+                if (petToRemove != null)
+                {
+                    model.PetPhotos = model.PetPhotos.Where(p => p.Id != id).ToList();
+                }
+
+                // render UI
+                StateHasChanged();
+            }
+            catch
+            {
+                Loader.Hide();
+                Snackbar.Add($"Something went wrong", Severity.Error);
+            }
+            finally
+            {
+                Loader.Hide();
             }
         }
 

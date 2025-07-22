@@ -1,0 +1,40 @@
+﻿@page "/requests"
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@inject IDialogService DialogService
+@inject LoaderService Loader
+@inject ISnackbar Snackbar
+@inject IPetAdoptionAPI petAPI
+@attribute [Authorize]
+
+<PageTitle>Requests - PetAdoption</PageTitle>
+
+<div class="container-fluid pt-4">
+    <div>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudButton @onclick="AddPetAsync" Variant="Variant.Filled" Color="Color.Primary"> Add Pet </MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <!-- Grid design -->
+                <MudDataGrid T="PetViewModel" Items="@petsList" ColumnResizeMode="ResizeMode.Column" Bordered="true" Dense="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="Name" Editable="false" />
+                        <PropertyColumn Property="x => x.Age" Title="Age" Editable="false" />
+                        <PropertyColumn Property="x => x.Breed" Title="Breed" Editable="false" />
+                        <PropertyColumn Property="x => x.Gender" Title="Gender" Editable="false" />
+                        <PropertyColumn Property="x => x.Description" Title="Description" Editable="false" />
+                        <TemplateColumn CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudStack Row>
+                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => EditPet(context.Item.Id))" />
+                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeletePet(context.Item.Id))" />
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
+    </div>
+</div>

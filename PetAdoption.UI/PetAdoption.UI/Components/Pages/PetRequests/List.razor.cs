@@ -1,8 +1,9 @@
 ﻿using MudBlazor;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.APIModels;
+using PetAdoption.UI.Components.Pages.Pets;
 
-namespace PetAdoption.UI.Components.Pages.Pets
+namespace PetAdoption.UI.Components.Pages.PetRequests
 {
     public partial class List
     {
@@ -42,8 +43,8 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
                 PetViewModel model = new(result);
 
-                var parameters = new DialogParameters<AdddPetModal> { { x => x.EditModel, model } };
-                var dialog = await DialogService.ShowAsync<AdddPetModal>("Edit new Pet", parameters, dialogOptions);
+                var parameters = new DialogParameters<AddRequest> { { x => x.EditModel, model } };
+                var dialog = await DialogService.ShowAsync<AddRequest>("Edit new Pet", parameters, dialogOptions);
                 var dialogResult = await dialog.Result;
 
                 if (dialogResult != null && !dialogResult.Canceled)
