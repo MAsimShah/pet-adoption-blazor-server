@@ -1,24 +1,45 @@
-﻿namespace PetAdoption.UI.Components.Models
+﻿using PetAdoption.UI.Components.Models.APIModels;
+using System.ComponentModel.DataAnnotations;
+
+namespace PetAdoption.UI.Components.Models
 {
     public class PetRequestViewModel
     {
+        public PetRequestViewModel()
+        {
+            
+        }
+
+        public PetRequestViewModel(PetRequestModel model)
+        {
+            Id = model.Id;
+            PetId = model.PetId;
+            PetName = model.PetName;
+            UserId = model.UserId;
+            UserName = model.UserName;
+            RequestDate = model.RequestDate;
+            Message = model.Message;
+            Status = model.Status;
+        }
+
         public int Id { get; set; }
 
-        public int PetId { get; set; }         // FK to Pet
-        public int UserId { get; set; }        // FK to User making the request
+        [Required(ErrorMessage = "Please select a pet.")]
+        public int PetId { get; set; }
+
+        public string PetName { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+
+        [Required(ErrorMessage = "Please select a species.")]
+        public int SpeciesId { get; set; }
 
         public DateTime RequestDate { get; set; } = DateTime.UtcNow;
 
         public string Message { get; set; }    // Optional message by user
 
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
-    }
 
-    public enum RequestStatus
-    {
-        Pending,
-        Approved,
-        Rejected,
-        Cancelled
+        public List<DropDownModal> PetList { get; set; } = new List<DropDownModal>();
     }
 }

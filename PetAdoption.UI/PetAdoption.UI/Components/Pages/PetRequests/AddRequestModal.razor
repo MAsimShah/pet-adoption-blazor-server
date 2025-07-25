@@ -1,0 +1,47 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using PetAdoption.UI.Components.Models.APIModels
+@inject IDialogService DialogService
+@inject LoaderService Loader
+@inject ISnackbar Snackbar
+@inject IPetAdoptionAPI petAPI
+@inject CustomAuthStateProvider AuthState
+@inject IConfiguration Configuration
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@model" OnValidSubmit="SaveRequest">
+            <DataAnnotationsValidator />
+
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudStack Row="true">
+                        <MudSelect Variant="Variant.Filled" Label="Species" @bind-Value="model.SpeciesId">
+                            @foreach (var species in Enum.GetValues<Species>())
+                            {
+                                <MudSelectItem Value="@species">@species</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect Variant="Variant.Filled" Label="Pets" @bind-Value="model.PetId">
+                            @foreach (var animalGender in model.PetList)
+                            {
+                                <MudSelectItem Value="@animalGender">@animalGender</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDatePicker Label="Request Date" Editable="true" @bind-value="model.RequestDate" Placeholder="Select Date" For="@(() => model.RequestDate)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="Message" @bind-Value="model.Message" Variant="Variant.Filled" For="@(() => model.Message)" />
+                </MudItem>
+            </MudGrid>
+
+            <div class="d-flex justify-end">
+                <MudButton Size="Size.Medium" OnClick="Cancel">Cancel</MudButton>
+                <MudButton Size="Size.Medium" Color="Color.Primary" ButtonType="ButtonType.Submit">Save</MudButton>
+            </div>
+        </EditForm>
+    </DialogContent>
+</MudDialog>

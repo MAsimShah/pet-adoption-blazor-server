@@ -7,7 +7,7 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 {
     public partial class List
     {
-        private List<PetViewModel> petsList = new();
+        private List<PetRequestViewModel> requestList = new();
         DialogOptions dialogOptions = new DialogOptions
         {
             BackgroundClass = "my-custom-class",
@@ -27,24 +27,24 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 
         #region methods
 
-        async Task EditPet(int petId)
+        async Task EditRequest(int id)
         {
             Loader.Show();
 
             try
             {
-                var result = await petAPI.GetPetAsync(petId);
+                var result = await petAPI.GetRequestAsync(id);
 
                 if (result is null)
                 {
-                    Snackbar.Add("Not fetched pet info", Severity.Error);
+                    Snackbar.Add("Not fetched Request", Severity.Error);
                     return;
                 }
 
-                PetViewModel model = new(result);
+                PetRequestViewModel model = new(result);
 
-                var parameters = new DialogParameters<AddRequest> { { x => x.EditModel, model } };
-                var dialog = await DialogService.ShowAsync<AddRequest>("Edit new Pet", parameters, dialogOptions);
+                var parameters = new DialogParameters<AddRequestModal> { { x => x.EditModel, model } };
+                var dialog = await DialogService.ShowAsync<AddRequestModal>("Edit new Request", parameters, dialogOptions);
                 var dialogResult = await dialog.Result;
 
                 if (dialogResult != null && !dialogResult.Canceled)
@@ -55,7 +55,7 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
             catch (Exception)
             {
                 Loader.Hide();
-                Snackbar.Add("Not fetched pet info", Severity.Error);
+                Snackbar.Add("Not fetched request.", Severity.Error);
             }
             finally
             {
@@ -63,9 +63,9 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
             }
         }
 
-        private async Task AddPetAsync()
+        private async Task AddRequestAsync()
         {
-            var dialog = await DialogService.ShowAsync<AdddPetModal>("Add new Pet", dialogOptions);
+            var dialog = await DialogService.ShowAsync<AddRequestModal>("Add new Request", dialogOptions);
             var result = await dialog.Result;
 
             if (result != null && !result.Canceled)
@@ -74,40 +74,27 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
             }
         }
 
-
-        private string GetHealthStatusBadgeClass(HealthStatus status)
-        {
-            return status switch
-            {
-                HealthStatus.GoodHealth => "bg-success",
-                HealthStatus.Vaccinated => "bg-primary",
-                HealthStatus.SpecialMedicalNeeds => "bg-warning",
-                HealthStatus.UnderTreatment => "bg-danger",
-                _ => "bg-secondary"
-            };
-        }
-
-        private async Task DeletePet(int id)
+        private async Task DeleteRequest(int id)
         {
             try
             {
                 Loader.Show();
-                await petAPI.DeletePetAsync(id);
+                await petAPI.DeleteRequestAsync(id);
 
                 // grid refresh with db calling
-                var petToRemove = petsList.FirstOrDefault(p => p.Id == id);
-                if (petToRemove != null)
+                var toRemove = requestList.FirstOrDefault(p => p.Id == id);
+                if (toRemove != null)
                 {
-                    petsList = petsList.Where(p => p.Id != id).ToList();
+                    requestList = requestList.Where(p => p.Id != id).ToList();
                 }
 
-                Snackbar.Add($"Pet info deleted successfully", Severity.Success);
+                Snackbar.Add($"Request deleted successfully", Severity.Success);
                 StateHasChanged();
             }
             catch
             {
                 Loader.Hide();
-                Snackbar.Add($"Not able to delete pet info", Severity.Error);
+                Snackbar.Add($"Not able to delete Request.", Severity.Error);
             }
             finally
             {
@@ -120,15 +107,31 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
             Loader.Show();
             try
             {
-                var result = await petAPI.GetAllPetsAsync();
+                var result = await petAPI.GetAllRequestsAsync();
 
-                petsList = result is null || !result.Any() ? new List<PetViewModel>() : result;
+                result = result is null || !result.Any() ? new List<PetRequestModel>() : result;
+
+                foreach(var entity in result)
+                {
+                    requestList.Add(new PetRequestViewModel()
+                    {
+                        Id = entity.PetId,
+                        PetId = entity.PetId,
+                        PetName = entity.PetName,
+                        UserId = entity.UserId,
+                        UserName = entity.UserName,
+                        RequestDate = entity.RequestDate,
+                        Message = entity.Message,
+                        Status = entity.Status
+                    });
+                }
+
                 StateHasChanged();
             }
             catch
             {
                 Loader.Hide();
-                Snackbar.Add($"Not fetched all pets information", Severity.Error);
+                Snackbar.Add($"Not fetched all requests", Severity.Error);
             }
             finally
             {

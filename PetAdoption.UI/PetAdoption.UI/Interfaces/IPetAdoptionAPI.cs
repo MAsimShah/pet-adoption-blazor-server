@@ -40,5 +40,25 @@ namespace PetAdoption.UI.Interfaces
         Task DeletePetPhotoAsync(int id);
 
         #endregion Pets
+
+        #region Pet's Requests
+
+        [Get("/api/Requests/get-list")]
+        Task<List<PetRequestModel>> GetAllRequestsAsync();
+
+        [Get("/api/Requests/Get/{id}")]
+        Task<PetRequestModel> GetRequestAsync(int id);
+
+        [Post("/api/Requests/Add")]
+        Task<PetRequestModel> AddRequestAsync([Body] PetRequestModel model);
+
+        [Put("/api/Requests/Update")]
+        Task<PetRequestModel> UpdateRequestAsync([Body] PetRequestModel model);
+
+        [Delete("/api/Requests/Delete/{id}")]
+        Task DeleteRequestAsync(int id);
+
+        #endregion Pet's Requests
+
     }
 }
