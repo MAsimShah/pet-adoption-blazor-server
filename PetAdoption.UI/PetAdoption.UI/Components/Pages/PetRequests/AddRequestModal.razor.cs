@@ -12,18 +12,26 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 
         [Parameter]
         public PetRequestViewModel EditModel { get; set; } = new();
+
         private PetRequestViewModel model = new PetRequestViewModel();
 
         #region methods
 
         protected override Task OnInitializedAsync()
         {
-            if (EditModel != null && EditModel.Id > 0)
+            try
             {
-                model = EditModel;
-            }
+                if (EditModel != null && EditModel.Id > 0)
+                {
+                    model = EditModel;
+                }
 
-            return base.OnInitializedAsync();
+                return base.OnInitializedAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private void Cancel() => MudDialog.Cancel();
