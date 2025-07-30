@@ -21,7 +21,12 @@
                     <Columns>
                         <PropertyColumn Property="x => x.PetName" Title="Name" Editable="false" />
                         <PropertyColumn Property="x => x.UserName" Title="User name" Editable="false" />
-                        <PropertyColumn Property="x => x.RequestDate.Date" Title="Breed" Editable="false" />
+                        <PropertyColumn Property="x => x.RequestDate" Title="Breed" Editable="false">
+                            <CellTemplate>
+                                @context.Item.RequestDate.ToString("dd/MM/yyyy")
+                            </CellTemplate>
+
+                        </PropertyColumn>
                         <PropertyColumn Property="x => x.Status" Title="Status" Editable="false" />
                         <TemplateColumn CellClass="d-flex justify-end">
                             <CellTemplate>
