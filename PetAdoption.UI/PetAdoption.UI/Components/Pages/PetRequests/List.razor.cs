@@ -44,6 +44,9 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
                 PetRequestViewModel model = new(result);
 
                 var parameters = new DialogParameters<AddRequestModal> { { x => x.EditModel, model } };
+
+                Loader.Hide();
+
                 var dialog = await DialogService.ShowAsync<AddRequestModal>("Edit new Request", parameters, dialogOptions);
                 var dialogResult = await dialog.Result;
 
@@ -52,7 +55,7 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
                     await RefreshGrid();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Loader.Hide();
                 Snackbar.Add("Not fetched request.", Severity.Error);
@@ -110,12 +113,13 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
                 var result = await petAPI.GetAllRequestsAsync();
 
                 result = result is null || !result.Any() ? new List<PetRequestModel>() : result;
+                requestList = new List<PetRequestViewModel>();
 
-                foreach(var entity in result)
+                foreach (var entity in result)
                 {
                     requestList.Add(new PetRequestViewModel()
                     {
-                        Id = entity.PetId,
+                        Id = entity.Id,
                         PetId = entity.PetId,
                         PetName = entity.PetName,
                         UserId = entity.UserId,

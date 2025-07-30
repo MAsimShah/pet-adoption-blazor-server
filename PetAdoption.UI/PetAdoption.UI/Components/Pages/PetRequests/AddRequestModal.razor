@@ -13,29 +13,28 @@
             <MudGrid>
                 <MudItem xs="12">
                     <MudStack Row="true">
-                        <MudSelect Variant="Variant.Filled" Label="Species" @bind-Value="model.SpeciesId">
+                        <MudSelect T="int" Variant="Variant.Filled" Label="Species" @bind-Value="model.SpeciesId">
                             @foreach (var species in Enum.GetValues<Species>())
                             {
-                                <MudSelectItem Value="@species">@species</MudSelectItem>
+                                <MudSelectItem Value="@((int)species)">@species</MudSelectItem>
                             }
                         </MudSelect>
 
-                        <MudSelect T="int" Variant="Variant.Filled" Label="Pets" @bind-Value="model.PetId">
-                            @if (model.PetList != null && model.PetList.Any())
+                        @if (model.PetList != null && model.PetList.Any())
                             {
+                            <MudSelect Variant="Variant.Filled" Label="Pets" @bind-Value="model.PetId">
                                 @foreach (var animalGender in model.PetList)
                                 {
+
                                     <MudSelectItem Value="@animalGender.Id">@animalGender.Name</MudSelectItem>
                                 }
-                            }
-                            else
-                            {
-                                <MudSelectItem Value="2">Select any one 2</MudSelectItem>
-                                <MudSelectItem Value="12">Select any one 12</MudSelectItem>
-                                <MudSelectItem Value="33">Select any one 33</MudSelectItem>
-                            }
-
-                        </MudSelect>
+                            </MudSelect>
+                        }
+                        else
+                        {
+                             <MudSelect T="string" Variant="Variant.Filled" Label="Pets">
+                            </MudSelect>
+                        }
                     </MudStack>
                 </MudItem>
                 <MudItem xs="12">
