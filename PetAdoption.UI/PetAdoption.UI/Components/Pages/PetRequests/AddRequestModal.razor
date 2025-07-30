@@ -1,6 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using PetAdoption.UI.Components.Models.APIModels
-@inject IDialogService DialogService
+﻿@inject IDialogService DialogService
 @inject LoaderService Loader
 @inject ISnackbar Snackbar
 @inject IPetAdoptionAPI petAPI
@@ -22,19 +20,29 @@
                             }
                         </MudSelect>
 
-                        <MudSelect Variant="Variant.Filled" Label="Pets" @bind-Value="model.PetId">
-                            @foreach (var animalGender in model.PetList)
+                        <MudSelect T="int" Variant="Variant.Filled" Label="Pets" @bind-Value="model.PetId">
+                            @if (model.PetList != null && model.PetList.Any())
                             {
-                                <MudSelectItem Value="@animalGender">@animalGender</MudSelectItem>
+                                @foreach (var animalGender in model.PetList)
+                                {
+                                    <MudSelectItem Value="@animalGender.Id">@animalGender.Name</MudSelectItem>
+                                }
                             }
+                            else
+                            {
+                                <MudSelectItem Value="2">Select any one 2</MudSelectItem>
+                                <MudSelectItem Value="12">Select any one 12</MudSelectItem>
+                                <MudSelectItem Value="33">Select any one 33</MudSelectItem>
+                            }
+
                         </MudSelect>
                     </MudStack>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudDatePicker Label="Request Date" Editable="true" @bind-value="model.RequestDate" Placeholder="Select Date" For="@(() => model.RequestDate)" />
+                    <MudDatePicker Label="Request Date" Editable="true" @bind-value="model.RequestDate" Placeholder="Select Date" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField Label="Message" @bind-Value="model.Message" Variant="Variant.Filled" For="@(() => model.Message)" />
+                    <MudTextField Label="Message" @bind-Value="model.Message" Variant="Variant.Filled" />
                 </MudItem>
             </MudGrid>
 
