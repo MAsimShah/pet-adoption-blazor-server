@@ -17,7 +17,7 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 
         #region methods
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             try
             {
@@ -26,7 +26,15 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
                     model = EditModel;
                 }
 
-                return base.OnInitializedAsync();
+                Loader.Show();
+
+                model.PetList = await petAPI.GetPetDropdownAsync();
+
+                StateHasChanged();
+
+                Loader.Hide();
+
+                await base.OnInitializedAsync();
             }
             catch (Exception ex)
             {

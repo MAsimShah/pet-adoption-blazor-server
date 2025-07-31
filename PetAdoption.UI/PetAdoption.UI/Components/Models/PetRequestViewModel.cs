@@ -27,16 +27,16 @@ namespace PetAdoption.UI.Components.Models
         [Required(ErrorMessage = "Please select a pet.")]
         public int PetId { get; set; }
 
-        public string PetName { get; set; }
+        public string? PetName { get; set; }
         public string UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         [Required(ErrorMessage = "Please select a species.")]
         public int SpeciesId { get; set; }
 
         public DateTime RequestDate { get; set; } = DateTime.UtcNow;
 
-        public string Message { get; set; }    // Optional message by user
+        public string? Message { get; set; }    // Optional message by user
 
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
 

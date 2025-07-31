@@ -30,6 +30,9 @@ namespace PetAdoption.UI.Interfaces
         [Get("/api/Pets/get-list")]
         Task<List<PetViewModel>> GetAllPetsAsync();
 
+        [Get("/api/Pets/dropdown")]
+        Task<List<DropDownModal>> GetPetDropdownAsync();
+
         [Get("/api/Pets/Get/{petId}")]
         Task<PetModel> GetPetAsync(int petId);
 
