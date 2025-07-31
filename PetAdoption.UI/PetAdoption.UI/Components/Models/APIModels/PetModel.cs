@@ -20,6 +20,7 @@
         public DateTime? AdoptableSince { get; set; }
         public string? Location { get; set; }
 
+        public string? UserId { get; set; } = "";
         public List<PetPhotoModel> PetPhotos { get; set; } = new List<PetPhotoModel>();
     }
 

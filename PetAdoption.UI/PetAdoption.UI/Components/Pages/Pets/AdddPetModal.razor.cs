@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using PetAdoption.UI.Components.Models;
@@ -54,73 +55,85 @@ namespace PetAdoption.UI.Components.Pages.Pets
                     return;
                 }
 
-                PetModel apiResult = new()
+                AuthenticationState? authUser = await AuthState.GetAuthenticationStateAsync();
+                var user = authUser.User;
+                string? userId = user.FindFirst("Id")?.Value;
+
+                if (!string.IsNullOrEmpty(userId))
                 {
-                    Id = model.Id,
-                    Name = model.Name,
-                    Breed = model.Breed,
-                    Age = model.Age,
-                    ContactInformation = model.ContactInformation,
-                    Species = model.Species,
-                    AdoptableSince = model.AdoptableSince,
-                    AdoptionFee = model.AdoptionFee,
-                    Color = model.Color,
-                    Description = model.Description,
-                    Gender = model.Gender,
-                    GoodWithKids = model.GoodWithKids,
-                    GoodWithOtherPets = model.GoodWithOtherPets,
-                    HealthStatus = model.HealthStatus,
-                    Location = model.Location,
-                    Microchipped = model.Microchipped
-                };
-
-                if (apiResult.Id > 0)
-                    apiResult = await petAPI.UpdatePetAsync(apiResult);
-                else
-                    apiResult = await petAPI.AddPetAsync(apiResult);
-
-                if (apiResult is null)
-                {
-                    Snackbar.Add($"{model.Name} not saved successfully! Please try again", Severity.Error);
-                    return;
-                }
-
-                if (UploadedImages != null && UploadedImages.Any())
-                {
-                    List<Base64ImageFile> images = new List<Base64ImageFile>();
-
-                    foreach (var file in UploadedImages)
+                    PetModel apiResult = new()
                     {
-                        var fileStream = file.OpenReadStream(10 * 1024 * 1024); // max 10MB
-                        var streamContent = new StreamContent(fileStream);
+                        Id = model.Id,
+                        Name = model.Name,
+                        Breed = model.Breed,
+                        Age = model.Age,
+                        ContactInformation = model.ContactInformation,
+                        Species = model.Species,
+                        AdoptableSince = model.AdoptableSince,
+                        AdoptionFee = model.AdoptionFee,
+                        Color = model.Color,
+                        Description = model.Description,
+                        Gender = model.Gender,
+                        GoodWithKids = model.GoodWithKids,
+                        GoodWithOtherPets = model.GoodWithOtherPets,
+                        HealthStatus = model.HealthStatus,
+                        Location = model.Location,
+                        Microchipped = model.Microchipped,
+                        UserId = userId,
+                    };
 
-                        using var ms = new MemoryStream();
-                        await fileStream.CopyToAsync(ms);
-                        var bytes = ms.ToArray();
+                    if (apiResult.Id > 0)
+                        apiResult = await petAPI.UpdatePetAsync(apiResult);
+                    else
+                        apiResult = await petAPI.AddPetAsync(apiResult);
 
-                        var base64 = Convert.ToBase64String(bytes);
-
-                        var base64WithPrefix = $"data:{file.ContentType};base64,{base64}";
-
-                        images.Add(new Base64ImageFile(file.Name, base64WithPrefix));
-                    }
-
-                    Base64UploadRequest payload = new Base64UploadRequest() { PetId = apiResult.Id, Images = images };
-
-                    var json = JsonSerializer.Serialize(payload);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var files = await petAPI.UploadedPetFilesAsync(payload);
-
-                    if (files is null || !files.Any()) 
+                    if (apiResult is null)
                     {
-                        Snackbar.Add($"Uploaded files not saved successfully!", Severity.Error);
+                        Snackbar.Add($"{model.Name} not saved successfully! Please try again", Severity.Error);
                         return;
                     }
-                }
 
-                Snackbar.Add($"{model.Name} is saved successfully", Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
+                    if (UploadedImages != null && UploadedImages.Any())
+                    {
+                        List<Base64ImageFile> images = new List<Base64ImageFile>();
+
+                        foreach (var file in UploadedImages)
+                        {
+                            var fileStream = file.OpenReadStream(10 * 1024 * 1024); // max 10MB
+                            var streamContent = new StreamContent(fileStream);
+
+                            using var ms = new MemoryStream();
+                            await fileStream.CopyToAsync(ms);
+                            var bytes = ms.ToArray();
+
+                            var base64 = Convert.ToBase64String(bytes);
+
+                            var base64WithPrefix = $"data:{file.ContentType};base64,{base64}";
+
+                            images.Add(new Base64ImageFile(file.Name, base64WithPrefix));
+                        }
+
+                        Base64UploadRequest payload = new Base64UploadRequest() { PetId = apiResult.Id, Images = images };
+
+                        var json = JsonSerializer.Serialize(payload);
+                        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        var files = await petAPI.UploadedPetFilesAsync(payload);
+
+                        if (files is null || !files.Any())
+                        {
+                            Snackbar.Add($"Uploaded files not saved successfully!", Severity.Error);
+                            return;
+                        }
+                    }
+
+                    Snackbar.Add($"{model.Name} is saved successfully", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    Snackbar.Add($"User not authenticated. Please login again.", Severity.Error);
+                }
             }
             catch (Exception ex)
             {

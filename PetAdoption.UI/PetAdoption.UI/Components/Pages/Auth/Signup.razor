@@ -14,7 +14,7 @@ s
         <MudGrid GutterSize="3" AlignItems="Center" Justify="Justify.Center">
             <!-- Left column: Image -->
             <MudItem xs="4" sm="5" class="d-flex justify-center" Style="max-width: 300px; max-height: 300px; overflow: hidden;">
-                <MudImage Src="@previewImageUrl" ObjectFit="ObjectFit.Cover" Alt="Mony the dog" Elevation="25" Class="rounded-lg" @onclick="AskImageUpload" Style="max-width: 100%; height: auto; max-height: 300px;" />
+                <MudImage Src="@previewImageUrl" ObjectFit="ObjectFit.Cover" Alt="Upload Your Image" Elevation="25" Class="rounded-lg" @onclick="AskImageUpload" Style="max-width: 100%; height: auto; max-height: 300px;" />
                 <MudFileUpload T="IBrowserFile" @ref="@_fileElement" OnFilesChanged="UploadProfilePhoto" Class="invisible">
                 </MudFileUpload>
             </MudItem>
