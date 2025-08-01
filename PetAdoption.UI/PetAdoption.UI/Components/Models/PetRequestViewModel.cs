@@ -7,7 +7,7 @@ namespace PetAdoption.UI.Components.Models
     {
         public PetRequestViewModel()
         {
-            
+
         }
 
         public PetRequestViewModel(PetRequestModel model)
@@ -25,10 +25,10 @@ namespace PetAdoption.UI.Components.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Please select a pet.")]
-        public int PetId { get; set; }
+        public int? PetId { get; set; }
 
         public string? PetName { get; set; }
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public string? UserName { get; set; }
 
         [Required(ErrorMessage = "Please select a species.")]
