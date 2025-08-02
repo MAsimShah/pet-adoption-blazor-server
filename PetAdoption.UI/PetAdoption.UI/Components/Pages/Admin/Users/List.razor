@@ -1,7 +1,38 @@
 ﻿@page "/users"
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@inject IDialogService DialogService
+@inject LoaderService Loader
+@inject ISnackbar Snackbar
+@inject IPetAdoptionAPI petAPI
+@attribute [Authorize(Roles = "Admin")]
 
-<h3>List</h3>
+<PageTitle>Users - PetAdoption</PageTitle>
 
-@code {
-
-}
+<div class="container-fluid pt-4">
+    <div>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudButton @onclick="AddUserAsync" Variant="Variant.Filled" Color="Color.Primary"> Add new User </MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <!-- Grid design -->
+                <MudDataGrid T="UserViewModel" Items="@userList" ColumnResizeMode="ResizeMode.Column" Bordered="true" Dense="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="Name" Editable="false" />
+                        <PropertyColumn Property="x => x.Email" Title="Email" Editable="false" />
+                        <PropertyColumn Property="x => x.PhoneNumber" Title="Phone#" Editable="false" />
+                        <TemplateColumn CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudStack Row>
+                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => EditUser(context.Item.Id))" />
+                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => DeleteUser(context.Item.Id))" />
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
+    </div>
+</div>

@@ -1,353 +1,350 @@
 ﻿@page "/"
-@attribute [Authorize]
-
-<PageTitle>Home</PageTitle>
-
-
-@page "/admin"
 @using System.ComponentModel.DataAnnotations
 @inject IJSRuntime JSRuntime
+@attribute [Authorize]
 
-<PageTitle>Admin Dashboard - Pet Shelter</PageTitle>
-
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
-    <MudText Typo="Typo.h4" Class="mb-6" Color="Color.Primary">
-        <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="mr-2" />
-        Admin Dashboard
-    </MudText>
-
-    <!-- Dashboard Cards Section -->
-    <MudGrid Class="mb-6">
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="pa-4" Style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <MudCardContent Class="pa-0">
-                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                        <div>
-                            <MudText Typo="Typo.h4" Class="mb-1">120</MudText>
-                            <MudText Typo="Typo.body2">Pets Listed</MudText>
-                        </div>
-                        <MudIcon Icon="@Icons.Material.Filled.Pets" Size="Size.Large" />
-                    </MudStack>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="pa-4" Style="height: 140px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                <MudCardContent Class="pa-0">
-                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                        <div>
-                            <MudText Typo="Typo.h4" Class="mb-1">14</MudText>
-                            <MudText Typo="Typo.body2">Pending Requests</MudText>
-                        </div>
-                        <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" />
-                    </MudStack>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="pa-4" Style="height: 140px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                <MudCardContent Class="pa-0">
-                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                        <div>
-                            <MudText Typo="Typo.h4" Class="mb-1">305</MudText>
-                            <MudText Typo="Typo.body2">Active Users</MudText>
-                        </div>
-                        <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
-                    </MudStack>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="pa-4" Style="height: 140px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
-                <MudCardContent Class="pa-0">
-                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                        <div>
-                            <MudText Typo="Typo.h4" Class="mb-1">89</MudText>
-                            <MudText Typo="Typo.body2">Adoptions Approved</MudText>
-                        </div>
-                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" />
-                    </MudStack>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-
-    <!-- Main Content Grid -->
-    <MudGrid>
-        <!-- Pending Adoption Requests -->
-        <MudItem xs="12" lg="8">
-            <MudCard Class="mb-4">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            <MudIcon Icon="@Icons.Material.Filled.Inbox" Class="mr-2" />
-                            Pending Adoption Requests
-                        </MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudBadge Content="@pendingRequests.Count" Color="Color.Error" Overlap="true" Class="mx-6 my-4">
-                            <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshRequests" />
-                        </MudBadge>
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pa-0">
-                    <MudTable Items="@pendingRequests" Dense="true" Hover="true" Striped="true">
-                        <HeaderContent>
-                            <MudTh>Pet</MudTh>
-                            <MudTh>Applicant</MudTh>
-                            <MudTh>Date</MudTh>
-                            <MudTh>Actions</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Pet">
-                                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
-                                    <MudAvatar Size="Size.Small" Image="@context.PetImage" />
-                                    <div>
-                                        <MudText Typo="Typo.body2">@context.PetName</MudText>
-                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.PetBreed</MudText>
-                                    </div>
-                                </MudStack>
-                            </MudTd>
-                            <MudTd DataLabel="Applicant">
-                                <div>
-                                    <MudText Typo="Typo.body2">@context.ApplicantName</MudText>
-                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ApplicantEmail</MudText>
-                                </div>
-                            </MudTd>
-                            <MudTd DataLabel="Date">@context.ApplicationDate.ToString("MMM dd, yyyy")</MudTd>
-                            <MudTd DataLabel="Actions">
-                                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
-                                    <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Check" 
-                                              OnClick="@(() => ApproveRequest(context.Id))">
-                                        Approve
-                                    </MudButton>
-                                    <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" 
-                                              OnClick="@(() => RejectRequest(context.Id))">
-                                        Reject
-                                    </MudButton>
-                                </MudButtonGroup>
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-
-        <!-- Analytics Panel -->
-        <MudItem xs="12" lg="4">
-            <MudCard Class="mb-4">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            <MudIcon Icon="@Icons.Material.Filled.Analytics" Class="mr-2" />
-                            Analytics
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudStack Spacing="4">
-                        <div>
-                            <MudText Typo="Typo.subtitle2" Class="mb-2">Adoptions This Month</MudText>
-                            <MudProgressLinear Color="Color.Success" Value="75" Size="Size.Medium" Class="mb-1" />
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">23 out of 30 goal</MudText>
-                        </div>
-                        
-                        <MudDivider />
-                        
-                        <div>
-                            <MudText Typo="Typo.subtitle2" Class="mb-3">Most Popular Breeds</MudText>
-                            <MudStack Spacing="2">
-                                <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                                    <MudText Typo="Typo.body2">Golden Retriever</MudText>
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Primary">28</MudChip>
-                                </MudStack>
-                                <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                                    <MudText Typo="Typo.body2">Labrador</MudText>
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Secondary">24</MudChip>
-                                </MudStack>
-                                <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                                    <MudText Typo="Typo.body2">Mixed Breed</MudText>
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Tertiary">19</MudChip>
-                                </MudStack>
-                                <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                                    <MudText Typo="Typo.body2">German Shepherd</MudText>
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Info">15</MudChip>
-                                </MudStack>
-                            </MudStack>
-                        </div>
-                    </MudStack>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-
-        <!-- Pet Management -->
-        <MudItem xs="12" lg="6">
-            <MudCard Class="mb-4">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            <MudIcon Icon="@Icons.Material.Filled.Pets" Class="mr-2" />
-                            Pet Management
-                        </MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                                  OnClick="OpenAddPetDialog">
-                            Add Pet
-                        </MudButton>
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pa-0">
-                    <MudTable Items="@pets.Take(5)" Dense="true" Hover="true">
-                        <HeaderContent>
-                            <MudTh>Pet</MudTh>
-                            <MudTh>Status</MudTh>
-                            <MudTh>Actions</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Pet">
-                                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
-                                    <MudAvatar Size="Size.Small" Image="@context.Image" />
-                                    <div>
-                                        <MudText Typo="Typo.body2">@context.Name</MudText>
-                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Breed • @context.Age years</MudText>
-                                    </div>
-                                </MudStack>
-                            </MudTd>
-                            <MudTd DataLabel="Status">
-                                <MudChip T="string" Size="Size.Small"
-                                         Color="@(context.Status == "Available" ? Color.Success : Color.Warning)">
-                                    @context.Status
-                                </MudChip>
-                            </MudTd>
-                            <MudTd DataLabel="Actions">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" 
-                                              OnClick="@(() => EditPet(context.Id))" />
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
-                                              OnClick="@(() => DeletePet(context.Id))" />
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
-                    <MudCardActions>
-                        <MudButton FullWidth="true" Color="Color.Primary" Variant="Variant.Text">
-                            View All Pets
-                        </MudButton>
-                    </MudCardActions>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-
-        <!-- User Management -->
-        <MudItem xs="12" lg="6">
-            <MudCard Class="mb-4">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-2" />
-                            User Management
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Class="pa-0">
-                    <MudTable Items="@users.Take(5)" Dense="true" Hover="true">
-                        <HeaderContent>
-                            <MudTh>User</MudTh>
-                            <MudTh>Role</MudTh>
-                            <MudTh>Actions</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="User">
-                                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
-                                    <MudAvatar Size="Size.Small" Color="Color.Primary">
-                                        @context.Name.Substring(0, 1).ToUpper()
-                                    </MudAvatar>
-                                    <div>
-                                        <MudText Typo="Typo.body2">@context.Name</MudText>
-                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Email</MudText>
-                                    </div>
-                                </MudStack>
-                            </MudTd>
-                            <MudTd DataLabel="Role">
-                                <MudChip T="string" Size="Size.Small"
-                                         Color="@(context.Role == "Admin" ? Color.Error : Color.Primary)">
-                                    @context.Role
-                                </MudChip>
-                            </MudTd>
-                            <MudTd DataLabel="Actions">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" 
-                                              OnClick="@(() => EditUser(context.Id))" />
-                                <MudIconButton Icon="@Icons.Material.Filled.Block" Size="Size.Small" Color="Color.Warning"
-                                              OnClick="@(() => ToggleUserStatus(context.Id))" />
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
-                    <MudCardActions>
-                        <MudButton FullWidth="true" Color="Color.Primary" Variant="Variant.Text">
-                            View All Users
-                        </MudButton>
-                    </MudCardActions>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
-
-<!-- Add Pet Dialog -->
-<MudDialog @bind-IsVisible="showAddPetDialog" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">
-            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" />
-            Add New Pet
+<PageTitle>Dashboard - PetAdoption</PageTitle>
+<div>
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+        <MudText Typo="Typo.h4" Class="mb-6" Color="Color.Primary">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="mr-2" />
+            Dashboard
         </MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@isFormValid">
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="newPet.Name" Label="Pet Name" Required="true" RequiredError="Pet name is required" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="newPet.Breed" Label="Breed" Required="true" RequiredError="Breed is required" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudNumericField @bind-Value="newPet.Age" Label="Age (years)" Required="true" Min="0" Max="30" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudSelect @bind-Value="newPet.Gender" Label="Gender" Required="true">
-                        <MudSelectItem Value="@("Male")">Male</MudSelectItem>
-                        <MudSelectItem Value="@("Female")">Female</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="newPet.Description" Label="Description" Lines="3" />
-                </MudItem>
-                <MudItem xs="12">
-                    <MudFileUpload T="IBrowserFile" Accept=".jpg,.jpeg,.png" FilesChanged="OnFileChanged">
-                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" >
+
+        <!-- Dashboard Cards Section -->
+        <MudGrid Class="mb-6">
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="pa-4 petListedCount">
+                    <MudCardContent Class="pa-0">
+                        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.h4" Class="mb-1">120</MudText>
+                                <MudText Typo="Typo.body2">Pets Listed</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Pets" Size="Size.Large" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="pa-4 pendingRequestcount">
+                    <MudCardContent Class="pa-0">
+                        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.h4" Class="mb-1">14</MudText>
+                                <MudText Typo="Typo.body2">Pending Requests</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="pa-4 activeUsersCount">
+                    <MudCardContent Class="pa-0">
+                        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.h4" Class="mb-1">305</MudText>
+                                <MudText Typo="Typo.body2">Active Users</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="pa-4 adoptionApprovedCount">
+                    <MudCardContent Class="pa-0">
+                        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.h4" Class="mb-1">89</MudText>
+                                <MudText Typo="Typo.body2">Adoptions Approved</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        <!-- Main Content Grid -->
+        <MudGrid>
+            <!-- Pending Adoption Requests -->
+            <MudItem xs="12" lg="8">
+                <MudCard Class="mb-4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                <MudIcon Icon="@Icons.Material.Filled.Inbox" Class="mr-2" />
+                                Pending Adoption Requests
+                            </MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudBadge Content="@pendingRequests.Count" Color="Color.Error" Overlap="true" Class="mx-6 my-4">
+                                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshRequests" />
+                            </MudBadge>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent Class="pa-0">
+                        <MudTable Items="@pendingRequests" Dense="true" Hover="true" Striped="true">
+                            <HeaderContent>
+                                <MudTh>Pet</MudTh>
+                                <MudTh>Applicant</MudTh>
+                                <MudTh>Date</MudTh>
+                                <MudTh>Actions</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Pet">
+                                    <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudAvatar Size="Size.Small" Image="@context.PetImage" />
+                                        <div>
+                                            <MudText Typo="Typo.body2">@context.PetName</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">@context.PetBreed</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudTd>
+                                <MudTd DataLabel="Applicant">
+                                    <div>
+                                        <MudText Typo="Typo.body2">@context.ApplicantName</MudText>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ApplicantEmail</MudText>
+                                    </div>
+                                </MudTd>
+                                <MudTd DataLabel="Date">@context.ApplicationDate.ToString("MMM dd, yyyy")</MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                                        <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Check"
+                                                   OnClick="@(() => ApproveRequest(context.Id))">
+                                            Approve
+                                        </MudButton>
+                                        <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.Close"
+                                                   OnClick="@(() => RejectRequest(context.Id))">
+                                            Reject
+                                        </MudButton>
+                                    </MudButtonGroup>
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Analytics Panel -->
+            <MudItem xs="12" lg="4">
+                <MudCard Class="mb-4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                <MudIcon Icon="@Icons.Material.Filled.Analytics" Class="mr-2" />
+                                Analytics
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack Spacing="4">
+                            <div>
+                                <MudText Typo="Typo.subtitle2" Class="mb-2">Adoptions This Month</MudText>
+                                <MudProgressLinear Color="Color.Success" Value="75" Size="Size.Medium" Class="mb-1" />
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">23 out of 30 goal</MudText>
+                            </div>
+
+                            <MudDivider />
+
+                            <div>
+                                <MudText Typo="Typo.subtitle2" Class="mb-3">Most Popular Breeds</MudText>
+                                <MudStack Spacing="2">
+                                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.body2">Golden Retriever</MudText>
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">28</MudChip>
+                                    </MudStack>
+                                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.body2">Labrador</MudText>
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Secondary">24</MudChip>
+                                    </MudStack>
+                                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.body2">Mixed Breed</MudText>
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Tertiary">19</MudChip>
+                                    </MudStack>
+                                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.body2">German Shepherd</MudText>
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Info">15</MudChip>
+                                    </MudStack>
+                                </MudStack>
+                            </div>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Pet Management -->
+            <MudItem xs="12" lg="6">
+                <MudCard Class="mb-4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                <MudIcon Icon="@Icons.Material.Filled.Pets" Class="mr-2" />
+                                Pet Management
+                            </MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
+                                       OnClick="OpenAddPetDialog">
+                                Add Pet
+                            </MudButton>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent Class="pa-0">
+                        <MudTable Items="@pets.Take(5)" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>Pet</MudTh>
+                                <MudTh>Status</MudTh>
+                                <MudTh>Actions</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Pet">
+                                    <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudAvatar Size="Size.Small" Image="@context.Image" />
+                                        <div>
+                                            <MudText Typo="Typo.body2">@context.Name</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Breed • @context.Age years</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudTd>
+                                <MudTd DataLabel="Status">
+                                    <MudChip T="string" Size="Size.Small"
+                                             Color="@(context.Status == "Available" ? Color.Success : Color.Warning)">
+                                        @context.Status
+                                    </MudChip>
+                                </MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small"
+                                                   OnClick="@(() => EditPet(context.Id))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
+                                                   OnClick="@(() => DeletePet(context.Id))" />
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                        <MudCardActions>
+                            <MudButton FullWidth="true" Color="Color.Primary" Variant="Variant.Text">
+                                View All Pets
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- User Management -->
+            <MudItem xs="12" lg="6">
+                <MudCard Class="mb-4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-2" />
+                                User Management
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="pa-0">
+                        <MudTable Items="@users.Take(5)" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>User</MudTh>
+                                <MudTh>Role</MudTh>
+                                <MudTh>Actions</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="User">
+                                    <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudAvatar Size="Size.Small" Color="Color.Primary">
+                                            @context.Name.Substring(0, 1).ToUpper()
+                                        </MudAvatar>
+                                        <div>
+                                            <MudText Typo="Typo.body2">@context.Name</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Email</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudTd>
+                                <MudTd DataLabel="Role">
+                                    <MudChip T="string" Size="Size.Small"
+                                             Color="@(context.Role == "Admin" ? Color.Error : Color.Primary)">
+                                        @context.Role
+                                    </MudChip>
+                                </MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small"
+                                                   OnClick="@(() => EditUser(context.Id))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Block" Size="Size.Small" Color="Color.Warning"
+                                                   OnClick="@(() => ToggleUserStatus(context.Id))" />
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                        <MudCardActions>
+                            <MudButton FullWidth="true" Color="Color.Primary" Variant="Variant.Text">
+                                View All Users
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+
+    <!-- Add Pet Dialog -->
+    <MudDialog @bind-IsVisible="showAddPetDialog" Options="dialogOptions">
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" />
+                Add New Pet
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm @ref="form" @bind-IsValid="@isFormValid">
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="newPet.Name" Label="Pet Name" Required="true" RequiredError="Pet name is required" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="newPet.Breed" Label="Breed" Required="true" RequiredError="Breed is required" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="newPet.Age" Label="Age (years)" Required="true" Min="0" Max="30" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect @bind-Value="newPet.Gender" Label="Gender" Required="true">
+                            <MudSelectItem Value="@("Male")">Male</MudSelectItem>
+                            <MudSelectItem Value="@("Female")">Female</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="newPet.Description" Label="Description" Lines="3" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudFileUpload T="IBrowserFile" Accept=".jpg,.jpeg,.png" FilesChanged="OnFileChanged">
+                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
                                 Upload Photo
                             </MudButton>
-                    </MudFileUpload>
-                    @if (uploadedFileName != null)
-                    {
-                        <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-2">
-                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Small" Class="mr-1" />
-                            @uploadedFileName uploaded successfully
-                        </MudText>
-                    }
-                </MudItem>
-            </MudGrid>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CloseAddPetDialog">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddPet" Disabled="!isFormValid">
-            Add Pet
-        </MudButton>
-    </DialogActions>
-</MudDialog>
+                        </MudFileUpload>
+                        @if (uploadedFileName != null)
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-2">
+                                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Small" Class="mr-1" />
+                                @uploadedFileName uploaded successfully
+                            </MudText>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="CloseAddPetDialog">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddPet" Disabled="!isFormValid">
+                Add Pet
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
 
 @code {
     private bool showAddPetDialog = false;

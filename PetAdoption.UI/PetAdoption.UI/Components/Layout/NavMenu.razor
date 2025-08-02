@@ -7,6 +7,10 @@
     <MudNavLink Href="/">Home</MudNavLink>
     <MudNavLink Href="/pets">Pets</MudNavLink>
     <MudNavLink Href="/requests">Adoptions</MudNavLink>
+    @if (IsAdmin)
+    {
+        <MudNavLink Href="/users">Users</MudNavLink>
+    }
 
     <AuthorizeView>
         <Authorized>
@@ -30,6 +34,7 @@
 
 @code {
     private string ProfileImage { get; set; }
+    private bool IsAdmin { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,6 +53,8 @@
             {
                 ProfileImage = Configuration["BlazorApiUrl"] + imageUrl;
             }
+
+            IsAdmin = user?.IsInRole("Admin") ?? false;
         }
     }
 

@@ -1,22 +1,36 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.APIModels;
 using PetAdoption.UI.Components.Models.DTOs;
-using System.Security.Claims;
 
-namespace PetAdoption.UI.Components.Pages.Auth
+namespace PetAdoption.UI.Components.Pages.Admin.Users
 {
-    public partial class Signup
+    public partial class AddUserModel
     {
+        [CascadingParameter]
+        private IMudDialogInstance MudDialog { get; set; }
+
+        [Parameter]
+        public UserViewModel EditModel { get; set; } = new();
+
         private string? previewImageUrl;
         private Base64ImageFile? profileIage;
         private MudFileUpload<IBrowserFile>? _fileElement;
 
-        private RegisterViewModel model = new RegisterViewModel();
-        // public IBrowserFile ProfileFile { get; set; } = null;
+        private UserViewModel model = new UserViewModel();
 
+
+        protected override Task OnInitializedAsync()
+        {
+            if (EditModel != null && !string.IsNullOrEmpty(EditModel.Id))
+            {
+                model = EditModel;
+            }
+
+            return base.OnInitializedAsync();
+        }
 
         private async Task AskImageUpload()
         {
@@ -43,15 +57,32 @@ namespace PetAdoption.UI.Components.Pages.Auth
             try
             {
                 Loader.Show();
+                AuthToken token = null;
 
-                AuthToken token = await petAPI.RegisterUserAsync(new RegisterUserModel()
+                if (string.IsNullOrEmpty(model.Id))
                 {
-                    Name = model.Name,
-                    Email = model.Email,
-                    Password = model.Password,
-                    PhoneNumber = model.PhoneNumber,
-                    ProfilePhoto = profileIage
-                });
+                    token = await petAPI.RegisterUserAsync(new RegisterUserModel()
+                    {
+                        Name = model.Name,
+                        Email = model.Email,
+                        Password = model.Password,
+                        PhoneNumber = model.PhoneNumber,
+                        ProfilePhoto = profileIage
+                    });
+                }
+                else
+                {
+                    token = await petAPI.RegisterUserAsync(new UserModel()
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                        Email = model.Email,
+                        Password = model.Password,
+                        PhoneNumber = model.PhoneNumber,
+                        ProfilePhoto = profileIage
+                    });
+                }
+
 
                 if (token is null || string.IsNullOrEmpty(token.RefreshToken))
                 {
@@ -60,23 +91,16 @@ namespace PetAdoption.UI.Components.Pages.Auth
                 }
 
                 Snackbar.Add($"{model.Email} user created successfully", Severity.Success);
-
-                var claims = new List<Claim> { new Claim(ClaimTypes.Name, "userName") };
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-                await AuthState.MarkUserAsAuthenticated(token);
-                _Naivigation.NavigateTo("/", true);
+                MudDialog.Close(DialogResult.Ok(true));
             }
             catch (Exception ex)
             {
                 Loader.Hide();
-                var errorMessage = ((Refit.ApiException)ex).Content ?? "Something went wrong!";
-
-                Snackbar.Add(errorMessage, Severity.Error);
+                Snackbar.Add("Something went wrong!", Severity.Error);
             }
             finally
             {
-                Loader.Hide();
+                 Loader.Hide();
             }
         }
     }

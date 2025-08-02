@@ -57,7 +57,7 @@ namespace PetAdoption.UI.Auth
                     }
                 }
 
-                var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+                var identity = new ClaimsIdentity(jwt.Claims, "jwt", ClaimTypes.Name, ClaimTypes.Role);
                 var user = new ClaimsPrincipal(identity);
 
                 return new AuthenticationState(user);

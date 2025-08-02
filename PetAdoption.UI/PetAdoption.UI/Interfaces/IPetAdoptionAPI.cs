@@ -8,7 +8,7 @@ namespace PetAdoption.UI.Interfaces
     public interface IPetAdoptionAPI
     {
         [Post("/api/Auth/Register")]
-        Task<AuthToken> RegisterUserAsync([Body] RegisterUser model);
+        Task<AuthToken> RegisterUserAsync([Body] RegisterUserModel model);
 
         [Post("/api/Auth/Login")]
         Task<AuthToken> LoginUserAsync([Body] LoginViewModel model);
@@ -62,6 +62,20 @@ namespace PetAdoption.UI.Interfaces
         Task DeleteRequestAsync(int id);
 
         #endregion Pet's Requests
+
+        #region Users
+
+        [Get("/api/Auth/GetAllUsers")]
+        Task<List<UserModel>> GetAllUsersAsync();
+
+        [Get("/api/Auth/Get/{id}")]
+        Task<UserModel> GetUserAsync(string id);
+
+        [Delete("/api/Auth/Delete/{id}")]
+        Task DeleteUserAsync(string id);
+
+
+        #endregion Users
 
     }
 }

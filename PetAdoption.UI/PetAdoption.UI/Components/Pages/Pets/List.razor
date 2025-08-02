@@ -28,7 +28,7 @@
                             <CellTemplate>
                                 <MudStack Row>
                                     <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => EditPet(context.Item.Id))" />
-                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeletePet(context.Item.Id))" />
+                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => DeletePet(context.Item.Id))" />
                                 </MudStack>
                             </CellTemplate>
                         </TemplateColumn>
