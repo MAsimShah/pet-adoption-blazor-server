@@ -22,13 +22,5 @@ namespace PetAdoption.UI.Components.Models
         [Required(ErrorMessage = "Phone# is required.")]
         [RegularExpression(@"^\+?[0-9]{10,15}$", ErrorMessage = "Enter a valid phone#.")]
         public string PhoneNumber { get; set; }
-
-        public Gender Gender { get; set; } = Gender.Male;
-    }
-
-    public enum Gender
-    {
-        Male = 1,
-        Female = 2
     }
 }
