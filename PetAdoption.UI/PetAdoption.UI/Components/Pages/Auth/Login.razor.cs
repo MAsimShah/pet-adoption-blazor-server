@@ -31,7 +31,8 @@ namespace PetAdoption.UI.Components.Pages.Auth
             catch (Exception ex)
             {
                 Loader.Hide();
-                Snackbar.Add("Something went wrong!", Severity.Error);
+                var errorMessage = ((Refit.ApiException)ex).Content ?? "Something went wrong!";
+                Snackbar.Add(errorMessage, Severity.Error);
             }
             finally
             {

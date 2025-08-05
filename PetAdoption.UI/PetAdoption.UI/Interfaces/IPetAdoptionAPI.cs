@@ -71,6 +71,10 @@ namespace PetAdoption.UI.Interfaces
         [Get("/api/Auth/Get/{id}")]
         Task<UserModel> GetUserAsync(string id);
 
+
+        [Put("/api/Auth/Update")]
+        Task<AuthToken> UpdateUserAsync([Body] UserModel model);
+
         [Delete("/api/Auth/Delete/{id}")]
         Task DeleteUserAsync(string id);
 

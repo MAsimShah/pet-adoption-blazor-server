@@ -1,6 +1,10 @@
 ﻿@inject CustomAuthStateProvider AuthState
 @inject NavigationManager _Naivigation
 @inject IConfiguration Configuration
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject LoaderService Loader
+@inject IPetAdoptionAPI petAPI
 
 <!-- Inline horizontal navigation -->
 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
@@ -21,7 +25,7 @@
                     </MudAvatar>
                 </ActivatorContent>
                 <ChildContent>
-                    <MudMenuItem Label="Profile" />
+                    <MudMenuItem Label="Profile" OnClick="EditUser" />
                     <MudMenuItem Label="Logout" OnClick="Logout" />
                 </ChildContent>
             </MudMenu>
@@ -31,41 +35,3 @@
         </NotAuthorized>
     </AuthorizeView>
 </MudStack>
-
-@code {
-    private string ProfileImage { get; set; }
-    private bool IsAdmin { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthState.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            var imageUrl = user.FindFirst("ProfileImage")?.Value;
-
-            if (string.IsNullOrEmpty(imageUrl))
-            {
-                ProfileImage = Configuration["DefaultProfileImage"];
-            }
-            else
-            {
-                ProfileImage = Configuration["BlazorApiUrl"] + imageUrl;
-            }
-
-            IsAdmin = user?.IsInRole("Admin") ?? false;
-        }
-    }
-
-    private void LoginPage()
-    {
-        _Naivigation.NavigateTo("/", true);
-    }
-
-    private async Task Logout()
-    {
-        await AuthState.MarkUserAsLoggedOut();
-        _Naivigation.NavigateTo("/", true);
-    }
-}

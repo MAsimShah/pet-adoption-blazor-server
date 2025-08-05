@@ -3,38 +3,30 @@
 @inject NavigationManager _Naivigation
 @inject LoaderService Loader
 @inject ISnackbar Snackbar
+@inject IConfiguration Configuration
 @layout EmptyLayout
-
 
 <MudDialog>
     <DialogContent>
-        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-12 mx-auto">
-            <MudPaper Elevation="4" Class="pa-6">
-                <MudGrid GutterSize="3" AlignItems="Center" Justify="Justify.Center">
-                    <!-- Left column: Image -->
-                    <MudItem xs="4" sm="5" class="d-flex justify-center" Style="max-width: 300px; max-height: 300px; overflow: hidden;">
-                        <MudImage Src="@previewImageUrl" ObjectFit="ObjectFit.Cover" Alt="Upload Your Image" Elevation="25" Class="rounded-lg" @onclick="AskImageUpload" Style="max-width: 100%; height: auto; max-height: 300px;" />
-                        <MudFileUpload T="IBrowserFile" @ref="@_fileElement" OnFilesChanged="UploadProfilePhoto" Class="invisible">
-                        </MudFileUpload>
-                    </MudItem>
+        <MudGrid GutterSize="3" AlignItems="Center" Justify="Justify.Center">
+            <MudItem xs="4" sm="5" class="d-flex justify-center" Style="max-width: 300px; max-height: 300px; overflow: hidden;">
+                <MudImage Src="@previewImageUrl" ObjectFit="ObjectFit.Cover" Alt="Upload Your Image" Elevation="25" Class="rounded-lg" @onclick="AskImageUpload" Style="max-width: 100%; height: auto; max-height: 300px;" />
+                <MudFileUpload T="IBrowserFile" @ref="@_fileElement" OnFilesChanged="UploadProfilePhoto" Class="invisible">
+                </MudFileUpload>
+            </MudItem>
 
-                    <MudItem xs="8" sm="7">
-                        <MudText Typo="Typo.h5" Class="text-center mb-4r text-al" Style="text-align: center">Login</MudText>
+            <MudItem xs="8" sm="7">
+                <EditForm Model="@model" OnValidSubmit="RegisterUser">
+                    <DataAnnotationsValidator />
 
-                        <EditForm Model="@model" OnValidSubmit="RegisterUser">
-                            <DataAnnotationsValidator />
+                    <MudTextField Label="Name" InputType="InputType.Text" @bind-Value="model.Name" Variant="Variant.Filled" FullWidth="true" For="@(() => model.Name)" />
+                    <MudTextField Label="Email" InputType="InputType.Email" @bind-Value="model.Email" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.Email)" />
+                    <MudTextField Label="Password" InputType="InputType.Password" @bind-Value="model.Password" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.Password)" />
+                    <MudTextField Label="Phone #" InputType="InputType.Telephone" @bind-Value="model.PhoneNumber" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.PhoneNumber)" />
 
-                            <MudTextField Label="Name" InputType="InputType.Text" @bind-Value="model.Name" Variant="Variant.Filled" FullWidth="true" For="@(() => model.Name)" />
-                            <MudTextField Label="Email" InputType="InputType.Email" @bind-Value="model.Email" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.Email)" />
-                            <MudTextField Label="Password" InputType="InputType.Password" @bind-Value="model.Password" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.Password)" />
-                            <MudTextField Label="Confirm Password" InputType="InputType.Password" @bind-Value="model.ConfirmPassword" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.ConfirmPassword)" />
-                            <MudTextField Label="Phone #" InputType="InputType.Telephone" @bind-Value="model.PhoneNumber" Variant="Variant.Filled" FullWidth="true" Class="mt-4" For="@(() => model.PhoneNumber)" />
-
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6">Save</MudButton>
-                        </EditForm>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudContainer>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6">Save</MudButton>
+                </EditForm>
+            </MudItem>
+        </MudGrid>
     </DialogContent>
 </MudDialog>
