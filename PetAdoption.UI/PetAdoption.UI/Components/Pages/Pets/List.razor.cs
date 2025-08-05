@@ -42,6 +42,8 @@ namespace PetAdoption.UI.Components.Pages.Pets
 
                 PetViewModel model = new(result);
 
+                Loader.Hide();
+
                 var parameters = new DialogParameters<AdddPetModal> { { x => x.EditModel, model } };
                 var dialog = await DialogService.ShowAsync<AdddPetModal>("Edit new Pet", parameters, dialogOptions);
                 var dialogResult = await dialog.Result;

@@ -47,17 +47,19 @@ namespace PetAdoption.UI.Components.Pages.Admin.Users
                     Name = result.Name,
                     Email = result.Email,
                     Password = result.Password,
-                    PhoneNumber = result.PhoneNumber
+                    PhoneNumber = result.PhoneNumber,
+                    ProfileImage = result.ProfileImage
                 };
 
-                //var parameters = new DialogParameters<AdddPetModal> { { x => x.EditModel, model } };
-                //var dialog = await DialogService.ShowAsync<AdddPetModal>("Edit new Pet", parameters, dialogOptions);
-                //var dialogResult = await dialog.Result;
+                Loader.Hide();
+                var parameters = new DialogParameters<AddUserModel> { { x => x.EditModel, model } };
+                var dialog = await DialogService.ShowAsync<AddUserModel>("Edit User", parameters, dialogOptions);
+                var dialogResult = await dialog.Result;
 
-                //if (dialogResult != null && !dialogResult.Canceled)
-                //{
-                //    await RefreshGrid();
-                //}
+                if (dialogResult != null && !dialogResult.Canceled)
+                {
+                    await RefreshGrid();
+                }
             }
             catch (Exception)
             {
@@ -72,7 +74,7 @@ namespace PetAdoption.UI.Components.Pages.Admin.Users
 
         private async Task AddUserAsync()
         {
-            var dialog = await DialogService.ShowAsync<AdddPetModal>("Add new User", dialogOptions);
+            var dialog = await DialogService.ShowAsync<AddUserModel>("Add new User", dialogOptions);
             var result = await dialog.Result;
 
             if (result != null && !result.Canceled)

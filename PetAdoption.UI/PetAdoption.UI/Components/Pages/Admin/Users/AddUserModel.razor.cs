@@ -26,6 +26,7 @@ namespace PetAdoption.UI.Components.Pages.Admin.Users
         {
             if (EditModel != null && !string.IsNullOrEmpty(EditModel.Id))
             {
+                previewImageUrl = Configuration["BlazorApiUrl"] + EditModel.ProfileImage;
                 model = EditModel;
             }
 
@@ -72,7 +73,7 @@ namespace PetAdoption.UI.Components.Pages.Admin.Users
                 }
                 else
                 {
-                    token = await petAPI.RegisterUserAsync(new UserModel()
+                    token = await petAPI.UpdateUserAsync(new UserModel()
                     {
                         Id = model.Id,
                         Name = model.Name,
