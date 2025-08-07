@@ -1,6 +1,12 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
 @inject IJSRuntime JSRuntime
+@inject IDialogService DialogService
+@inject IPetAdoptionAPI petAPI
+@inject NavigationManager _Naivigation
+@inject LoaderService Loader
+@inject ISnackbar Snackbar
+@inject CustomAuthStateProvider AuthState
 @attribute [Authorize]
 
 <PageTitle>Dashboard - PetAdoption</PageTitle>
@@ -18,7 +24,7 @@
                     <MudCardContent Class="pa-0">
                         <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                             <div>
-                                <MudText Typo="Typo.h4" Class="mb-1">120</MudText>
+                                <MudText Typo="Typo.h4" Class="mb-1">@dashboardStats.TotalPets</MudText>
                                 <MudText Typo="Typo.body2">Pets Listed</MudText>
                             </div>
                             <MudIcon Icon="@Icons.Material.Filled.Pets" Size="Size.Large" />
@@ -32,7 +38,7 @@
                     <MudCardContent Class="pa-0">
                         <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                             <div>
-                                <MudText Typo="Typo.h4" Class="mb-1">14</MudText>
+                                <MudText Typo="Typo.h4" Class="mb-1">@dashboardStats.TotalPendingRequests</MudText>
                                 <MudText Typo="Typo.body2">Pending Requests</MudText>
                             </div>
                             <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" />
@@ -41,26 +47,29 @@
                 </MudCard>
             </MudItem>
 
-            <MudItem xs="12" sm="6" md="3">
-                <MudCard Class="pa-4 activeUsersCount">
-                    <MudCardContent Class="pa-0">
-                        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                            <div>
-                                <MudText Typo="Typo.h4" Class="mb-1">305</MudText>
-                                <MudText Typo="Typo.body2">Active Users</MudText>
-                            </div>
-                            <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
-                        </MudStack>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
+            @if (IsAdmin)
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    <MudCard Class="pa-4 activeUsersCount">
+                        <MudCardContent Class="pa-0">
+                            <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <div>
+                                    <MudText Typo="Typo.h4" Class="mb-1">@dashboardStats.TotalActiveUsers</MudText>
+                                    <MudText Typo="Typo.body2">Active Users</MudText>
+                                </div>
+                                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
 
             <MudItem xs="12" sm="6" md="3">
                 <MudCard Class="pa-4 adoptionApprovedCount">
                     <MudCardContent Class="pa-0">
                         <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                             <div>
-                                <MudText Typo="Typo.h4" Class="mb-1">89</MudText>
+                                <MudText Typo="Typo.h4" Class="mb-1">@dashboardStats.TotalAdoptionApproved</MudText>
                                 <MudText Typo="Typo.body2">Adoptions Approved</MudText>
                             </div>
                             <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" />
