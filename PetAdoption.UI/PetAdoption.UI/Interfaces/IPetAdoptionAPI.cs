@@ -81,5 +81,12 @@ namespace PetAdoption.UI.Interfaces
 
         #endregion Users
 
+        #region Dashboard
+
+        [Get("/api/Dashboard/get-stats")]
+        Task<DashboardStatsModel> GetStatsAsync();
+
+        #endregion Dashboard
+
     }
 }

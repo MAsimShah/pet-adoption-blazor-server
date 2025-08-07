@@ -84,13 +84,6 @@ namespace PetAdoption.UI.Components.Pages.Admin.Users
                     });
                 }
 
-
-                if (token is null || string.IsNullOrEmpty(token.RefreshToken))
-                {
-                    Snackbar.Add($"{model.Email} not saved successfully! Please try again", Severity.Error);
-                    return;
-                }
-
                 Snackbar.Add($"{model.Email} user created successfully", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             }
