@@ -120,7 +120,7 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
                     requestList.Add(new PetRequestViewModel()
                     {
                         Id = entity.Id,
-                        PetId = entity.PetId,
+                        PetId = entity.PetId ?? 0,
                         PetName = entity.PetName,
                         UserId = entity.UserId,
                         UserName = entity.UserName,

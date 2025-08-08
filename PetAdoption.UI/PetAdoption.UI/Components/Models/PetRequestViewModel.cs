@@ -13,7 +13,7 @@ namespace PetAdoption.UI.Components.Models
         public PetRequestViewModel(PetRequestModel model)
         {
             Id = model.Id;
-            PetId = model.PetId;
+            PetId = model.PetId ?? 0;
             PetName = model.PetName;
             UserId = model.UserId;
             UserName = model.UserName;
@@ -25,7 +25,8 @@ namespace PetAdoption.UI.Components.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Please select a pet.")]
-        public int? PetId { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a pet.")]
+        public int PetId { get; set; }
 
         public string? PetName { get; set; }
         public string? UserId { get; set; }

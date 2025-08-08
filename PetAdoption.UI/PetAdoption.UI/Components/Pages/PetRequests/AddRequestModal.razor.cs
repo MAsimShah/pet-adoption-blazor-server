@@ -15,7 +15,16 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 
         private PetRequestViewModel model = new PetRequestViewModel();
 
+        public List<DropDownModal> PetList { get; set; } = new List<DropDownModal>();
+
         #region methods
+
+        private async Task OnValueChanged(int value)
+        {
+            model.SpeciesId = value;
+            model.PetList = await petAPI.GetPetDropdownAsync();
+            //StateHasChanged();
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -28,11 +37,14 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 
                 Loader.Show();
 
-                model.PetList = await petAPI.GetPetDropdownAsync();
-
-                StateHasChanged();
+                //model.PetList = await petAPI.GetPetDropdownAsync();
+                //model.PetIdt = new DropDownModal()
+                //{
+                //    Id = 2
+                //};
 
                 Loader.Hide();
+               // StateHasChanged();
 
                 await base.OnInitializedAsync();
             }
