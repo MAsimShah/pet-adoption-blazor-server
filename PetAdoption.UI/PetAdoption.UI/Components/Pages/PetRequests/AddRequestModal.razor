@@ -13,28 +13,23 @@
             <MudGrid>
                 <MudItem xs="12">
                     <MudStack Row="true">
-                        <MudSelect T="int" Variant="Variant.Filled" Label="Species" @bind-Value="model.SpeciesId">
+                        <MudSelect Variant="Variant.Filled" Label="Species" T="int" Value="model.SpeciesId" For="@(() => model.SpeciesId)"  ValueChanged="OnValueChanged">
                             @foreach (var species in Enum.GetValues<Species>())
                             {
                                 <MudSelectItem Value="@((int)species)">@species</MudSelectItem>
                             }
                         </MudSelect>
 
-                        @if (model.PetList != null && model.PetList.Any())
+                        <MudSelect Variant="Variant.Filled" Label="Pets" T="int" Value="model.PetId" For="@(() => model.PetId)" Placeholder="Please Select" Disabled="@(!PetList.Any())">
+                            @if (model.PetList != null && model.PetList.Any())
                             {
-                            <MudSelect Variant="Variant.Filled" Label="Pets" @bind-Value="model.PetId">
                                 @foreach (var animalGender in model.PetList)
                                 {
 
                                     <MudSelectItem Value="@animalGender.Id">@animalGender.Name</MudSelectItem>
                                 }
-                            </MudSelect>
-                        }
-                        else
-                        {
-                             <MudSelect T="string" Variant="Variant.Filled" Label="Pets">
-                            </MudSelect>
-                        }
+                            }
+                        </MudSelect>
                     </MudStack>
                 </MudItem>
                 <MudItem xs="12">
