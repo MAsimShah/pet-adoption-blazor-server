@@ -16,6 +16,44 @@
         <MudNavLink Href="/users">Users</MudNavLink>
     }
 
+    @if (Requests.Count > 0)
+    {
+        <MudBadge Dot="true" Content="Requests.Count.ToString()" Overlap="true" Class="small-dot" Color="Color.Secondary">
+            <MudMenu Icon="@Icons.Material.Filled.Notifications"
+                     Color="Color.Primary"
+                     Dense="true">
+                @foreach (var request in Requests)
+                {
+                    <MudMenuItem>
+                        @request.UserName - @request.PetName
+
+                        @if (request.Status == RequestStatus.Pending)
+                        {
+                            <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Check" @onClick="@(() => UpdateStatus(request.Id, RequestStatus.Approved))"> Approve </MudButton>
+                            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" @onClick="@(() => UpdateStatus(request.Id, RequestStatus.Rejected))">Reject </MudButton>
+                        }
+                        else if (request.Status == RequestStatus.Approved)
+                        {
+                            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" @onClick="@(() => UpdateStatus(request.Id, RequestStatus.Rejected))">Reject </MudButton>
+                        }
+
+                    </MudMenuItem>
+                }
+            </MudMenu>
+        </MudBadge>
+    }
+    else
+    {
+        <MudMenu Icon="@Icons.Material.Filled.Notifications"
+                 Color="Color.Primary"
+                 Dense="true">
+                <MudMenuItem>
+                    Nothing for show
+                </MudMenuItem>
+        </MudMenu>
+    }
+
+
     <AuthorizeView>
         <Authorized>
             <MudMenu>

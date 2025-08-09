@@ -4,6 +4,7 @@
 @inject IPetAdoptionAPI petAPI
 @inject CustomAuthStateProvider AuthState
 @inject IConfiguration Configuration
+@inject NavigationManager _Naivigation
 
 <MudDialog>
     <DialogContent>
@@ -20,7 +21,7 @@
                             }
                         </MudSelect>
 
-                        <MudSelect Variant="Variant.Filled" Label="Pets" T="int" Value="model.PetId" For="@(() => model.PetId)" Placeholder="Please Select" Disabled="@(!PetList.Any())">
+                        <MudSelect Variant="Variant.Filled" Label="Pets" T="int" @bind-Value="model.PetId" For="@(() => model.PetId)" Placeholder="Please Select" Disabled="@(!model.PetList.Any())">
                             @if (model.PetList != null && model.PetList.Any())
                             {
                                 @foreach (var animalGender in model.PetList)

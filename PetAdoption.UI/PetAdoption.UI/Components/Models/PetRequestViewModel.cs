@@ -20,6 +20,7 @@ namespace PetAdoption.UI.Components.Models
             RequestDate = model.RequestDate;
             Message = model.Message;
             Status = model.Status;
+            SpeciesId = model.Specie is null ? (int)Species.Bird : (int)model.Specie;
         }
 
         public int Id { get; set; }

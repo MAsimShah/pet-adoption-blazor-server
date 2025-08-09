@@ -2,11 +2,13 @@ using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.ResponseCompression;
 using MudBlazor.Services;
 using PetAdoption.UI.Auth;
 using PetAdoption.UI.Components;
 using PetAdoption.UI.Interfaces;
 using PetAdoption.UI.Services;
+using PetAdoption.UI.SignalRHubs;
 using Refit;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -48,6 +50,14 @@ builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
 
 builder.Services.AddSingleton<LoaderService>();
 
+builder.Services.AddSignalR();
+
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        ["application/octet-stream"]);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -57,6 +67,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseResponseCompression();
+app.MapHub<RequestHub>("/requestHub");
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
