@@ -58,7 +58,8 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
             catch (Exception ex)
             {
                 Loader.Hide();
-                Snackbar.Add("Not fetched request.", Severity.Error);
+                var errorMessage = ((Refit.ApiException)ex).Content ?? "Something went wrong!";
+                Snackbar.Add(errorMessage, Severity.Error);
             }
             finally
             {
@@ -132,10 +133,11 @@ namespace PetAdoption.UI.Components.Pages.PetRequests
 
                 StateHasChanged();
             }
-            catch
+            catch(Exception ex)
             {
                 Loader.Hide();
-                Snackbar.Add($"Not fetched all requests", Severity.Error);
+                var errorMessage = ((Refit.ApiException)ex).Content ?? $"Not fetched all requests";
+                Snackbar.Add(errorMessage, Severity.Error);
             }
             finally
             {

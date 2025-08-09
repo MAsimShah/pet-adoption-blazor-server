@@ -21,13 +21,22 @@
                     <Columns>
                         <PropertyColumn Property="x => x.PetName" Title="Name" Editable="false" />
                         <PropertyColumn Property="x => x.UserName" Title="User name" Editable="false" />
-                        <PropertyColumn Property="x => x.RequestDate" Title="Breed" Editable="false">
+                        <PropertyColumn Property="x => x.Status" Title="Status" Editable="false">
+                             <CellTemplate> 
+                            <MudChip T="string" Size="Size.Small"
+                                             Color="@(context.Item.Status == RequestStatus.Approved ? Color.Success 
+                                                    : (context.Item.Status == RequestStatus.Rejected ? Color.Error : Color.Info))">
+                                        @context.Item.Status
+                                </MudChip>
+                            </CellTemplate>
+
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.RequestDate" Title="Request Date" Editable="false">
                             <CellTemplate>
                                 @context.Item.RequestDate.ToString("dd/MM/yyyy")
                             </CellTemplate>
 
                         </PropertyColumn>
-                        <PropertyColumn Property="x => x.Status" Title="Status" Editable="false" />
                         <TemplateColumn CellClass="d-flex justify-end">
                             <CellTemplate>
                                 <MudStack Row>

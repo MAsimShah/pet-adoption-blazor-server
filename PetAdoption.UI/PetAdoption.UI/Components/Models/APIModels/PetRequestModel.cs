@@ -3,6 +3,7 @@
     public class PetRequestModel : BaseModel
     {
         public int? PetId { get; set; }
+        public Species? Specie { get; set; }
         public string? PetName { get; set; }
         public string? UserId { get; set; }
         public string? UserName { get; set; }

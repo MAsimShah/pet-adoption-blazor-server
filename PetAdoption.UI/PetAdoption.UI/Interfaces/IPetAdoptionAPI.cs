@@ -1,4 +1,5 @@
-﻿using PetAdoption.UI.Components.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PetAdoption.UI.Components.Models;
 using PetAdoption.UI.Components.Models.APIModels;
 using PetAdoption.UI.Components.Models.DTOs;
 using Refit;
@@ -31,7 +32,7 @@ namespace PetAdoption.UI.Interfaces
         Task<List<PetViewModel>> GetAllPetsAsync();
 
         [Get("/api/Pets/dropdown")]
-        Task<List<DropDownModal>> GetPetDropdownAsync();
+        Task<List<DropDownModal>> GetPetDropdownAsync(Species? specie = null);
 
         [Get("/api/Pets/Get/{petId}")]
         Task<PetModel> GetPetAsync(int petId);
@@ -49,6 +50,9 @@ namespace PetAdoption.UI.Interfaces
         [Get("/api/Requests/get-list")]
         Task<List<PetRequestModel>> GetAllRequestsAsync();
 
+        [Get("/api/Requests/getUserRequests")]
+        Task<List<PetRequestModel>> GetAllUserRequestsAsync();
+
         [Get("/api/Requests/Get/{id}")]
         Task<PetRequestModel> GetRequestAsync(int id);
 
@@ -57,6 +61,9 @@ namespace PetAdoption.UI.Interfaces
 
         [Put("/api/Requests/Update")]
         Task<PetRequestModel> UpdateRequestAsync([Body] PetRequestModel model);
+
+        [Put("/api/Requests/UpdateStatus")]
+        Task<PetRequestModel> UpdateRequestStatusAsync([FromQuery] int requestId, [FromQuery] RequestStatus status);
 
         [Delete("/api/Requests/Delete/{id}")]
         Task DeleteRequestAsync(int id);
